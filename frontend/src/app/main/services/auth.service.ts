@@ -10,6 +10,7 @@ declare var Auth0Lock: any;
 export class AuthService {
   //lock = new Auth0Lock('YOUR-AUTH0-CLIENT-ID', 'YOUR-AUTH0-DOMAIN.auth0.com');
   lock = new Auth0Lock('IZ3GZtcNIwZZHEXtzroj5rprgJWm053V', 'anantar.eu.auth0.com');
+  user: User;
 
   constructor(private router: Router, private userService: UserService) {
     this.lock.on('authenticated', (authResult: any) => {
@@ -32,6 +33,7 @@ export class AuthService {
         userService.addUserIfDoesNotExist(user);
 
         localStorage.setItem('profile', JSON.stringify(profile));
+        this.user = user;
       });
 
       this.lock.hide();
@@ -47,7 +49,8 @@ export class AuthService {
     // from local storage
     localStorage.removeItem('profile');
     localStorage.removeItem('id_token');
-    this.router.navigateByUrl('/profile');
+    this.user = undefined;
+    this.router.navigateByUrl('/presets');
   }
 
   loggedIn() {

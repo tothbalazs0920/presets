@@ -17,11 +17,11 @@ export class PresetModal implements OnInit {
     }
 
     ngOnInit(): void {
-        this.preset = new Preset();
-        this.preset.email = "bat@trustpilot.com";
+        this.preset = new Preset();      
     }
 
     save(): void {
+        this.preset.email = this.authService.user.email;
         this.presetService.savePreset(this.preset)
             .then(result => this.presets.push(this.preset));
     }

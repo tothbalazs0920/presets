@@ -5,9 +5,17 @@ const app = express();
 const jwt = require('express-jwt');
 const cors = require('cors');
 const bodyParser = require('body-parser');
+var cookieParser = require('cookie-parser');
+var mongoose = require('mongoose');
+var path = require('path');
+
+
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cookieParser());
+app.use('/', express.static(path.join(__dirname, 'dist')));
+
 app.use(cors());
 
 
@@ -19,7 +27,7 @@ const authCheck = jwt({
   secret: 'xWpmkoAEdkPyBJTH5Y3_PvG79N6WKXzfbN-rN_h0wlWQDwAfZCakfVN8SyWZmh4K',
   audience: 'IZ3GZtcNIwZZHEXtzroj5rprgJWm053V'
 });
-var mongoose = require('mongoose');
+
 mongoose.connect('mongodb://localhost/presets');
 var Preset = require('./preset');
 var User = require('./user');

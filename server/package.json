@@ -1,5 +1,5 @@
 {
-  "name": "angular2-authentication-tutorial",
+  "name": "presets-server",
   "version": "0.0.1",
   "description": "",
   "main": "server.js",
@@ -11,11 +11,13 @@
   "author": "Auth0",
   "license": "MIT",
   "dependencies": {
-    "body-parser": "^1.15.2",
+    "body-parser": "1.17.1",
+    "cookie-parser": "^1.4.3",
     "cors": "^2.8.1",
-    "express": "^4.14.0",
-    "express-jwt": "^3.4.0",
-    "mongodb": "^2.2.24",
-    "mongoose": "^4.8.5"
+    "express": "4.15.2",
+    "express-jwt": "5.1.0",
+    "mongodb": "2.2.25",
+    "mongoose": "4.9.0",
+    "morgan": "^1.8.1"
   }
 }

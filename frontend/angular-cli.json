@@ -1,7 +1,7 @@
 {
   "project": {
-    "version": "1.0.0-beta.15",
-    "name": "ng2auth"
+    "version": "1.0.0",
+    "name": "presets"
   },
   "apps": [
     {
