@@ -1,11 +1,23 @@
 <preset-modal [presets]="presets"></preset-modal> <h3 class="text-center">Prersets and profiles</h3>
-<div class="col-sm-4" *ngFor="let preset of presets">
+  
+<form (submit)="search(term.value)">
+  <div class="input-group input-group-sm" style="margin-bottom: 10px;">
+    <input #term (keyup)="search(term.value)" [value]="terms" class="form-control" placeholder="Search" autofocus>
+    <div class="input-group-btn">
+      <button type="submit" class="btn btn btn-default btn-flat"><i class="fa fa-search"></i></button>
+    </div>
+  </div>
+</form>
+
+<p>Results: {{ total | async }}</p>
+
+<div class="col-sm-4" *ngFor="let preset of presets | async">
   <div class="panel panel-default">
     <div class="panel-heading">
       <h3 class="panel-title">{{preset.name}}</h3>
     </div>
     <div class="panel-body">
-      {{preset.description}}
+     <div class="two-lines"> {{preset.description}} </div>
       <audio-player 
       (play)="handlePlay(preset.id, preset.audioFileId)" 
       (pause)="handlePause(preset.id)" 
@@ -24,3 +36,5 @@
     </div>
   </div>
 </div>
+
+<pagination [total]="total | async" [page]="page" (goTo)="goToPage($event)"></pagination>

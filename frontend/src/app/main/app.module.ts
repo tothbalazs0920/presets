@@ -16,6 +16,7 @@ import { AudioFileService } from './services/audio-file.service';
 import { UserService } from './services/user.service';
 import { Ng2Bs3ModalModule } from 'ng2-bs3-modal/ng2-bs3-modal';
 import { PresetModal } from './preset-modal/preset-modal.component';
+import { Pagination } from './pagination/pagination.component';
 
 @NgModule({
   imports: [
@@ -29,7 +30,8 @@ import { PresetModal } from './preset-modal/preset-modal.component';
     AppComponent,
     routedComponents,
     AudioPlayer,
-    PresetModal
+    PresetModal,
+    Pagination
   ],
   providers: [
     PresetService,

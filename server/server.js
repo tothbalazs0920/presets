@@ -5,17 +5,13 @@ const app = express();
 const jwt = require('express-jwt');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-var cookieParser = require('cookie-parser');
 var mongoose = require('mongoose');
 var path = require('path');
-
-
+var ceil = require( 'math-ceil' );
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(cookieParser());
 app.use('/', express.static(path.join(__dirname, 'dist')));
-
 app.use(cors());
 
 
@@ -39,6 +35,26 @@ app.get('/api/presets', (req, res) => {
     }
     res.json(presets);
   });
+})
+
+app.get('/api/presetList', (req, res) => {
+  var perPage = 6;
+  var page = req.query.page > 0 ? req.query.page : 0
+  
+  Preset
+    .find()
+    .limit(perPage)
+    .skip(perPage * (page - 1) )
+    .sort({ name: 'asc' })
+    .exec(function (err, presets) {
+      Preset.count().exec(function (err, count) {
+        res.json({
+          presets: presets,
+          page: page,
+          total: count
+        });
+      })
+    })
 })
 
 app.post('/api/user', (req, res) => {

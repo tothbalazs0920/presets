@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
-import { Headers, Http, Response } from '@angular/http';
+import { Headers, Http, Response, RequestOptions, URLSearchParams } from '@angular/http';
 import { AuthHttp } from 'angular2-jwt';
+import { Observable } from 'rxjs/Observable'
+import { PresetList } from './../preset-list/preset-list.interface'
 
 import 'rxjs/add/operator/toPromise';
-
 import { Preset } from './../preset';
 
 @Injectable()
@@ -35,6 +36,15 @@ export class PresetService {
       .toPromise()
       .then(response => console.log(response))
       .catch(this.handleError);
+  }
+
+  getSearchResult(search: string = null, page: number = 1, limit: number = 6): Observable<PresetList<Preset>> {
+    let params: URLSearchParams = new URLSearchParams();
+    if (search) params.set('search', search)
+    if (page) params.set('page', String(page))
+    if (limit) params.set('limit', String(limit))
+
+    return this.http.get('http://localhost:3001/api/presetList', { search: params }).map(res => res.json())
   }
 
   private handleError(error: any): Promise<any> {
