@@ -50,7 +50,6 @@ app.get('/api/presetList', (req, res) => {
       Preset.count().exec(function (err, count) {
         res.json({
           presets: presets,
-          page: page,
           total: count
         });
       })

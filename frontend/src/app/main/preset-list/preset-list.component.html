@@ -1,5 +1,6 @@
-<preset-modal [presets]="presets"></preset-modal> <h3 class="text-center">Prersets and profiles</h3>
-  
+<preset-modal [presets]="presets"></preset-modal>
+<h3 class="text-center">Prersets and profiles</h3>
+
 <form (submit)="search(term.value)">
   <div class="input-group input-group-sm" style="margin-bottom: 10px;">
     <input #term (keyup)="search(term.value)" [value]="terms" class="form-control" placeholder="Search" autofocus>
@@ -9,20 +10,17 @@
   </div>
 </form>
 
-<p>Results: {{ total | async }}</p>
+<p>Results: {{ total }}</p>
 
-<div class="col-sm-4" *ngFor="let preset of presets | async">
+<div class="col-sm-4" *ngFor="let preset of presets">
   <div class="panel panel-default">
     <div class="panel-heading">
       <h3 class="panel-title">{{preset.name}}</h3>
     </div>
     <div class="panel-body">
-     <div class="two-lines"> {{preset.description}} </div>
-      <audio-player 
-      (play)="handlePlay(preset.id, preset.audioFileId)" 
-      (pause)="handlePause(preset.id)" 
-      [showPause]="showPause(preset.id)" 
-      [showPlay]="showPlay(preset.id)"></audio-player>
+      <div class="two-lines"> {{preset.description}} </div>
+      <audio-player (play)="handlePlay(preset.id, preset.audioFileId)" (pause)="handlePause(preset.id)" [showPause]="showPause(preset.id)"
+        [showPlay]="showPlay(preset.id)"></audio-player>
     </div>
     <div class="panel-footer">
       <ul class="list-inline">
@@ -37,4 +35,13 @@
   </div>
 </div>
 
-<pagination [total]="total | async" [page]="page" (goTo)="goToPage($event)"></pagination>
+<div style="margin-top: 15px;">
+  <button (click)="getSearchResult(1)" class="pageNumber">First</button>
+  <button [disabled]="queryObject.pageNumber == 1" (click)="getPageWithSearchResult((queryObject.pageNumber - 1))" [ngClass]="{disabled: pageNumber == 1 || pageNumber == 0}"
+    class="pageNumber">Previous</button>
+  <span>
+                {{queryObject.pageNumber}} / {{pages.length}}
+            </span>
+  <button [disabled]="queryObject.pageNumber == pages.length" (click)="getPageWithSearchResult((queryObject.pageNumber + 1))"
+    [ngClass]="{disabled: pageNumber == pages.length}" class="pageNumber">Next</button>
+</div>

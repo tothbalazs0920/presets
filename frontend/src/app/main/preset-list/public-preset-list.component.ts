@@ -8,13 +8,6 @@ import { PresetListComponent } from './preset-list.component';
 import { Pagination } from '../pagination/pagination.component';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { Observable } from 'rxjs/Observable';
-import { Subject } from 'rxjs/Subject';
-import "rxjs/add/operator/debounceTime";
-import "rxjs/add/operator/distinctUntilChanged";
-import "rxjs/add/operator/merge";
-import "rxjs/add/operator/startWith";
-import 'rxjs/add/operator/share';
-import 'rxjs/add/operator/pluck';
 
 @Component({
     selector: 'preset-list',
@@ -22,60 +15,63 @@ import 'rxjs/add/operator/pluck';
     styleUrls: ['preset-list.component.css']
 })
 export class PublicPresetListComponent extends PresetListComponent implements OnInit {
-    presets: Observable<Preset[]>;
-    total: Observable<number>;
-
-    page: number = 1;
+    presets: Preset[];
+    total: number;
     terms: string = "";
-
-    private searchTermStream = new Subject<string>();
-    private pageStream = new Subject<number>();
+    errorMessage: string;
+    queryObject: any = {
+        pageNumber: 0,
+        searchTerm: '',
+        previouslySearchedTerm: '',
+    };
+    private _queryParamsSubscription;
+    pages: any[] = [];
 
     constructor(
         private AudioService: AudioService,
         private presetService: PresetService,
         private authService: AuthService,
+        private router: Router,
         private activatedRoute: ActivatedRoute
     ) {
         super(AudioService);
     }
 
     ngOnInit(): void {
-        this.activatedRoute.params.subscribe((params: Params) => {
-            this.page = params['page'];
-        });
-
-        const pageSource = this.pageStream.map(pageNumber => {
-            this.page = pageNumber
-            return { search: this.terms, page: pageNumber }
-        });
-
-        const searchSource = this.searchTermStream
-            .debounceTime(1000)
-            .distinctUntilChanged()
-            .map(searchTerm => {
-                this.terms = searchTerm
-                return { search: searchTerm, page: 1 }
-            });
-
-        const source = pageSource
-            .merge(searchSource)
-            .startWith({ search: this.terms, page: this.page })
-            .mergeMap((params: { search: string, page: number }) => {
-                return this.presetService.getSearchResult(params.search, params.page)
-            })
-            .share();
-
-        this.total = source.pluck('total');
-        this.presets = source.pluck('presets')
+        this._queryParamsSubscription = this.activatedRoute
+            .queryParams
+            .subscribe(
+            params => {
+                if (Object.keys(params).length === 0) {
+                    this.queryObject.pageNumber = 1;
+                } else {
+                this.queryObject.pageNumber = +params['pageNumber'];
+                this.queryObject.searchTerm = params['searchTerm'] || '';
+                this.queryObject.previouslySearchedTerm = params['previouslySearchedTerm'] || '';
+                }
+                this.getSearchResult(this.queryObject.pageNumber);
+            }
+            );
     }
 
-    search(terms: string) {
-        this.searchTermStream.next(terms);
+    getSearchResult(page: number) {
+        this.presetService
+            .getSearchResult(this.terms, page)
+            .subscribe(
+            presets => {
+                this.total = presets.total;
+                this.pages.length = Math.ceil(presets.total / 6);
+                return this.presets = presets.presets;
+            },
+            error => this.errorMessage = <any>error);
     }
 
-    goToPage(page: number) {
-        this.pageStream.next(page);
-    }
+    getPageWithSearchResult(pageNumber: number): void {
+        if (this.queryObject.pageNumber < 1 || this.queryObject.pageNumber > this.pages.length) {
+            return;
+        }
 
+        this.queryObject.pageNumber = pageNumber;
+        this.router.navigate(['/presets'], { queryParams: this.queryObject });
+    }
 }
