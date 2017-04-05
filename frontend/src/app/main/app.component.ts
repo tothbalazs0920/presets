@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { AuthService } from './services/auth.service';
+import { AuthService } from './user/auth.service';
 
 @Component({
   selector: 'presets',
@@ -10,5 +10,5 @@ export class AppComponent {
 
   title = 'Presets';
 
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService) {} 
 }

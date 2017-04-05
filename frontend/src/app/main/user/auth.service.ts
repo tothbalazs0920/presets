@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { tokenNotExpired } from 'angular2-jwt';
 import { Router } from '@angular/router';
 import { UserService } from './user.service';
-import { User } from './../user';
+import { User } from './../user/user';
 
 declare var Auth0Lock: any;
 
@@ -32,8 +32,9 @@ export class AuthService {
 
         userService.addUserIfDoesNotExist(user);
 
-        localStorage.setItem('profile', JSON.stringify(profile));
+        localStorage.setItem('preset_profile', profile.email);
         this.user = user;
+        console.log('');
       });
 
       this.lock.hide();

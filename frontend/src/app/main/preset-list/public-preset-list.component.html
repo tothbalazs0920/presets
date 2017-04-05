@@ -1,4 +1,5 @@
-<preset-modal [presets]="presets"></preset-modal>
+<button type="button" class="btn btn-default" routerLink="/upload" *ngIf="authService.loggedIn()">Add Preset</button>
+<button type="button" class="btn btn-default" (click)=authService.login() *ngIf="!authService.loggedIn()">Add Preset</button>
 <h3 class="text-center">Prersets and profiles</h3>
 
 <form (submit)="search(term.value)">

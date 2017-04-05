@@ -1,30 +1,49 @@
+<button type="button" class="btn btn-default" (click)="modal.open()" *ngIf="authService.loggedIn()">Add Preset</button>
+<button type="button" class="btn btn-default" (click)=authService.login() *ngIf="!authService.loggedIn()">Add Preset</button>
 
-    <button type="button" class="btn btn-default" (click)="validationModal.open()" *ngIf="authService.loggedIn()">Add Preset</button>
-    <button type="button" class="btn btn-default" (click)=authService.login() *ngIf="!authService.loggedIn()" >Add Preset</button>
-    
-    <modal [animation]="animation" [keyboard]="keyboard" [backdrop]="backdrop" (onClose)="closed()" (onDismiss)="dismissed()"
-        (onOpen)="opened()"  #validationModal>
-        <form #modalForm="ngForm">
-            <modal-header [show-close]="true">
-                <h4 class="modal-title">Preset</h4>
-            </modal-header>
-            <modal-body>
-                <div class="form-group">
-                    <label for="name">Name</label>
-                    <input type="text" class="form-control" required [(ngModel)]="preset.name" name="name" id="name">
+<modal [animation]="animation" [keyboard]="keyboard" [backdrop]="backdrop" (onClose)="closed()" (onDismiss)="dismissed()"
+    (onOpen)="opened()" #modal>
+    <form #modalForm="ngForm">
+        <modal-header [show-close]="true">
+            <h4 class="modal-title">Preset</h4>
+        </modal-header>
+        <modal-body>
+            <div class="form-group">
+                <label for="name">Name</label>
+                <input type="text" class="form-control" required [(ngModel)]="preset.name" name="name" id="name">
+            </div>
+            <p> {{preset.name}}</p>
+            <div class="form-group">
+                <label for="description">Description</label>
+                <input type="text" class="form-control" [(ngModel)]="preset.description" name="description" id="description">
+            </div>
+            <div class="form-group">
+                <label for="description">Technology</label>
+                <input type="text" class="form-control" required [(ngModel)]="preset.technology" name="technology" id="technology">
+            </div>
+
+            <div class="form-group">
+                <input type="file" ng2FileSelect name="file" [uploader]="uploader" />
+                <p>Queue length: {{ uploader?.queue?.length }}</p>
+                <table class="table">
+                    <tr *ngFor="let item of uploader.queue">
+                        <td><strong>{{ item?.file?.name }}</strong></td>
+                        <td class="text-center">
+                            <span *ngIf="item.isSuccess"><i class="glyphicon glyphicon-ok"></i></span>
+                            <span *ngIf="item.isCancel"><i class="glyphicon glyphicon-ban-circle"></i></span>
+                            <span *ngIf="item.isError"><i class="glyphicon glyphicon-remove"></i></span>
+                        </td>
+                    </tr>
+                </table>
+                <div class="progress">
+                    <div class="progress-bar" role="progressbar" [ngStyle]="{ 'width': uploader.progress + '%' }"></div>
                 </div>
-                <div class="form-group">
-                    <label for="description">Description</label>
-                    <input type="text" class="form-control" required [(ngModel)]="preset.description" name="description" id="description">
-                </div>
-                 <div class="form-group">
-                    <label for="description">Technology</label>
-                    <input type="text" class="form-control" required [(ngModel)]="preset.technology" name="technology" id="technology">
-                </div>
-            </modal-body>
-            <modal-footer>
-                <button type="button" class="btn btn-default" (click)="validationModal.dismiss()">Cancel</button>
-                <button type="button" class="btn btn-primary" (click)="save(); validationModal.close()">Save</button>
-            </modal-footer>
-        </form>
-    </modal>
+            </div>
+
+        </modal-body>
+        <modal-footer>
+            <button type="button" class="btn btn-default" (click)="modal.dismiss()">Cancel</button>
+            <button type="button" class="btn btn-primary" (click)="save(); modal.close()">Save</button>
+        </modal-footer>
+    </form>
+</modal>

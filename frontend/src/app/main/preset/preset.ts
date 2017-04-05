@@ -21,5 +21,6 @@ export class Preset {
   price: number;
   currency: string;
   audioFileId: string;
+  originalAudoFileName: string;
   email: string;
 }

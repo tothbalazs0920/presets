@@ -4,7 +4,7 @@ import { AuthHttp } from 'angular2-jwt';
 
 import 'rxjs/add/operator/toPromise';
 
-import { User } from './../user';
+import { User } from './../user/user';
 import { Headers, RequestOptions } from '@angular/http';
 
 @Injectable()

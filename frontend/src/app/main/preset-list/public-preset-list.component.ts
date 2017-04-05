@@ -1,17 +1,16 @@
 import { Component, OnInit } from '@angular/core';
-import { AuthService } from './../services/auth.service';
+import { AuthService } from './../user/auth.service';
 
-import { Preset } from './../preset';
-import { PresetService } from './../services/preset.service';
-import { AudioService } from './../services/audio.service';
+import { Preset } from './../preset/preset';
+import { PresetService } from './../preset/preset.service';
+import { AudioService } from './../audio-player/audio.service';
 import { PresetListComponent } from './preset-list.component';
-import { Pagination } from '../pagination/pagination.component';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { Observable } from 'rxjs/Observable';
 
 @Component({
     selector: 'preset-list',
-    templateUrl: 'preset-list.component.html',
+    templateUrl: 'public-preset-list.component.html',
     styleUrls: ['preset-list.component.css']
 })
 export class PublicPresetListComponent extends PresetListComponent implements OnInit {
@@ -74,4 +73,5 @@ export class PublicPresetListComponent extends PresetListComponent implements On
         this.queryObject.pageNumber = pageNumber;
         this.router.navigate(['/presets'], { queryParams: this.queryObject });
     }
+    
 }

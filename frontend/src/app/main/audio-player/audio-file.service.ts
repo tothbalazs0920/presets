@@ -9,6 +9,6 @@ export class AudioFileService {
     ) {}
 
     getAudioFile(audioFileId: string) { 
-      return './public/' + audioFileId;
+      return './uploads/' + audioFileId;
     }
 }

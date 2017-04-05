@@ -6,7 +6,6 @@ import { Component, Output, EventEmitter, Input } from '@angular/core';
   styleUrls: ['audio-player.component.css']
 })
 
-
 export class AudioPlayer {
   @Input() showPause;
   @Input() showPlay;

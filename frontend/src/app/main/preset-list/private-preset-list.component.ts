@@ -1,15 +1,14 @@
 import { Component, OnInit } from '@angular/core';
-import { AuthService } from './../services/auth.service';
+import { AuthService } from './../user/auth.service';
 
-import { Preset } from './../preset';
-import { PresetService } from './../services/preset.service';
-import { AudioService } from './../services/audio.service'
-import { PresetModal } from './../preset-modal/preset-modal.component'
+import { Preset } from './../preset/preset';
+import { PresetService } from './../preset/preset.service';
+import { AudioService } from './../audio-player/audio.service'
 import { PresetListComponent } from './preset-list.component';
 
 @Component({
     selector: 'private-preset-list',
-    templateUrl: 'preset-list.component.html',
+    templateUrl: 'private-preset-list.component.html',
     styleUrls: ['preset-list.component.css']
 })
 export class PrivatePresetListComponent extends PresetListComponent implements OnInit {
@@ -23,7 +22,8 @@ export class PrivatePresetListComponent extends PresetListComponent implements O
     }
 
     ngOnInit(): void {
-        this.presetService.getPersonalPresets(this.authService.user.email)
+        let email = localStorage.getItem('preset_profile');
+        this.presetService.getPersonalPresets(email)
             .then(presets => this.presets = presets);
     }
 }

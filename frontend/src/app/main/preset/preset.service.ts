@@ -5,7 +5,8 @@ import { Observable } from 'rxjs/Observable'
 import { PresetList } from './../preset-list/preset-list.interface'
 
 import 'rxjs/add/operator/toPromise';
-import { Preset } from './../preset';
+import 'rxjs/add/operator/map';
+import { Preset } from './preset';
 
 @Injectable()
 export class PresetService {
@@ -14,7 +15,7 @@ export class PresetService {
   private personalPresetListUrl = 'http://localhost:3001/api/preset/user/';
 
   constructor(private http: Http, private authHttp: AuthHttp) { }
-  getPresets() {
+  getPresets(): Promise<Preset[]> {
     return this.http
       .get(this.presetListUrl)
       .toPromise()
@@ -30,11 +31,11 @@ export class PresetService {
       .catch(this.handleError);
   }
 
-  savePreset(preset: Preset) {
+  savePreset(preset: Preset): Promise<string> {
     return this.http
       .post(this.presetUpdateUrl, preset)
       .toPromise()
-      .then(response => console.log(response))
+      .then(response => response.json().filename as string)
       .catch(this.handleError);
   }
 
@@ -44,7 +45,12 @@ export class PresetService {
     if (page) params.set('page', String(page))
     if (limit) params.set('limit', String(limit))
 
-    return this.http.get('http://localhost:3001/api/presetList', { search: params }).map(res => res.json())
+    return this.http.get('http://localhost:3001/api/presetList', { search: params }).map(res => res.json());
+  }
+
+    private extractData(res: Response) {
+    let body = res.json();
+    return body.data || { };
   }
 
   private handleError(error: any): Promise<any> {

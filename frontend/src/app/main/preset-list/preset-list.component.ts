@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
-import { Preset } from './../preset';
-import { AudioService } from './../services/audio.service'
+import { Component, OnInit,  ViewChild } from '@angular/core';
+import { Preset } from './../preset/preset';
+import { AudioService } from './../audio-player/audio.service';
+
 
 @Component({
   selector: 'preset-list'
@@ -8,6 +9,7 @@ import { AudioService } from './../services/audio.service'
 export class PresetListComponent {
   playing = false;
   current?: string;
+  
 
   constructor(
     protected audioService: AudioService) {
