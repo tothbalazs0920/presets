@@ -9,8 +9,14 @@ const mongoose = require('mongoose');
 const path = require('path');
 const multer = require('multer');
 const fs = require('fs');
+var ObjectID = require('mongodb').ObjectID;
 
 mongoose.connect('mongodb://localhost/presets');
+var conn = mongoose.connection;
+var GridFsStorage = require('multer-gridfs-storage');
+var Grid = require('gridfs-stream');
+Grid.mongo = mongoose.mongo;
+var gfs = Grid(conn.db);
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -102,10 +108,14 @@ app.post('/api/preset', (req, res) => {
   presetInstance.description = req.body.description;
   presetInstance.technology = req.body.technology;
   presetInstance.email = req.body.email;
+  presetInstance.audioFileId = req.body.audioFileId;
+  presetInstance._id = new ObjectID();
 
   presetInstance.save(function (err) {
     if (err) {
+      console.log('error:', err);
       res.status(500).send();
+      return;
     }
     res.status(204).send();
   });
@@ -120,14 +130,18 @@ app.get('/api/preset/user/:userid', authCheck, (req, res) => {
   });
 });
 
-var storage = multer.diskStorage({ //multers disk storage settings
-  destination: function (req, file, cb) {
-    cb(null, './uploads/');
-  },
+/** Setting up storage using multer-gridfs-storage */
+var storage = GridFsStorage({
+  gfs: gfs,
   filename: function (req, file, cb) {
-    var objectId = new ObjectID();
-    cb(null, objectId + '.' + file.originalname.split('.')[file.originalname.split('.').length - 1]);
-  }
+    var datetimestamp = Date.now();
+    cb(null,  new ObjectID() + '.'  + file.originalname.split('.')[file.originalname.split('.').length - 1]);
+  },
+  /** With gridfs we can store aditional meta-data along with the file */
+  metadata: function (req, file, cb) {
+    cb(null, { originalname: file.originalname });
+  },
+  root: 'audio' //root name for collection to store files into
 });
 
 var upload = multer({ //multer settings
@@ -149,6 +163,29 @@ app.post('/api/upload', function (req, res) {
       filename: req.file.filename,
       originalname: req.file.originalname
     });
+  });
+});
+
+app.get('/api/audio/:filename', function (req, res) {
+  gfs.collection('audio'); //set collection name to lookup into
+
+  /** First check if file exists */
+  gfs.files.find({ filename: req.params.filename }).toArray(function (err, files) {
+    if (!files || files.length === 0) {
+      return res.status(404).json({
+        responseCode: 1,
+        responseMessage: "error"
+      });
+    }
+    /** create read stream */
+    var readstream = gfs.createReadStream({
+      filename: files[0].filename,
+      root: "audio"
+    });
+    /** set the proper content type */
+    res.set('Content-Type', files[0].contentType)
+    /** return response */
+    return readstream.pipe(res);
   });
 });
 
