@@ -9,8 +9,8 @@
     </div>
     <div class="panel-body">
       <div class="two-lines"> {{preset.description}} </div>
-      <audio-player (play)="handlePlay(preset.id, preset.audioFileId)" (pause)="handlePause(preset.id)" [showPause]="showPause(preset.id)"
-        [showPlay]="showPlay(preset.id)"></audio-player>
+      <audio-player (play)="handlePlay(preset._id, preset.audioFileId)" (pause)="handlePause(preset._id)" [showPause]="showPause(preset._id)"
+        [showPlay]="showPlay(preset._id)"></audio-player>
     </div>
     <div class="panel-footer">
       <ul class="list-inline">

@@ -15,8 +15,8 @@ export class PresetListComponent {
     protected audioService: AudioService) {
   }
 
-  handlePlay(id: string, audioFileId: number) {
-    this.current = id;
+  handlePlay(_id: string, audioFileId: number) {
+    this.current = _id;
     this.audioService.play(audioFileId);
     this.playing = true;
   }

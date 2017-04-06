@@ -27,10 +27,16 @@ export class UploadComponent {
         this.uploader = new FileUploader({ url: this.URL });
         this.uploader.onAfterAddingFile = () => this.onUploaderAfterAddingFile();
         this.uploader.onWhenAddingFileFailed = () => this.onUploaderWhenAddingFileFailed();
+        this.uploader.onCompleteItem = (item: any, response: any, status: any, headers: any) => {
+            console.log(JSON.parse(response).filename);
+            this.preset.audioFileId = JSON.parse(response).filename;
+            console.log("");
+        };
     }
 
     onUploaderAfterAddingFile(): void {
         this.uploader.queue[0].upload();
+        console.log('');
     }
 
     onUploaderWhenAddingFileFailed(): void {
@@ -48,6 +54,6 @@ export class UploadComponent {
     save(): void {
         this.preset.email = localStorage.getItem('preset_profile');
         this.presetService.savePreset(this.preset)
-            .then(fiename => this.preset.audioFileId);
+            .then();
     }
 }

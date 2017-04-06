@@ -2,7 +2,7 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var presetSchema = new Schema({
-  id: Number,
+  _id: String,
   name: String,
   technology: String,
   soundcloudUrl: String,

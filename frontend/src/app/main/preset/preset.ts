@@ -1,5 +1,5 @@
 export class Preset {
-  id: number;
+  _id: string;
   name: string;
   technology: string;
   soundcloudUrl: string;

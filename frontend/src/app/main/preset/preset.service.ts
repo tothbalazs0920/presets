@@ -15,7 +15,7 @@ export class PresetService {
   private personalPresetListUrl = 'http://localhost:3001/api/preset/user/';
 
   constructor(private http: Http, private authHttp: AuthHttp) { }
-  getPresets(): Promise<Preset[]> {
+  getPresets() {
     return this.http
       .get(this.presetListUrl)
       .toPromise()
@@ -31,11 +31,11 @@ export class PresetService {
       .catch(this.handleError);
   }
 
-  savePreset(preset: Preset): Promise<string> {
+  savePreset(preset: Preset) {
     return this.http
       .post(this.presetUpdateUrl, preset)
       .toPromise()
-      .then(response => response.json().filename as string)
+      .then(response => console.log(response))
       .catch(this.handleError);
   }
 
@@ -46,11 +46,6 @@ export class PresetService {
     if (limit) params.set('limit', String(limit))
 
     return this.http.get('http://localhost:3001/api/presetList', { search: params }).map(res => res.json());
-  }
-
-    private extractData(res: Response) {
-    let body = res.json();
-    return body.data || { };
   }
 
   private handleError(error: any): Promise<any> {
