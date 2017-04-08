@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Headers, Http, Response, RequestOptions, URLSearchParams } from '@angular/http';
-import { AuthHttp } from 'angular2-jwt';
+import { AuthHttp } from './../auth-http/auth-http';
 import { Observable } from 'rxjs/Observable'
 import { PresetList } from './../preset-list/preset-list.interface'
 
@@ -12,7 +12,7 @@ import { Preset } from './preset';
 export class PresetService {
   private presetListUrl = 'http://localhost:3001/api/presets';
   private presetUpdateUrl = 'http://localhost:3001/api/preset';
-  private personalPresetListUrl = 'http://localhost:3001/api/preset/user/';
+  private personalPresetListUrl = 'http://localhost:3001/api/preset/profile';
 
   constructor(private http: Http, private authHttp: AuthHttp) { }
   getPresets() {
@@ -23,16 +23,16 @@ export class PresetService {
       .catch(this.handleError);
   }
 
-  getPersonalPresets(email: string) {
+  getPersonalPresets() {
     return this.authHttp
-      .get(this.personalPresetListUrl + email)
+      .get(this.personalPresetListUrl)
       .toPromise()
       .then(response => response.json() as Preset[])
       .catch(this.handleError);
   }
 
   savePreset(preset: Preset) {
-    return this.http
+    return this.authHttp
       .post(this.presetUpdateUrl, preset)
       .toPromise()
       .then(response => console.log(response))

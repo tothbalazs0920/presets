@@ -2,7 +2,6 @@
 
 const express = require('express');
 const app = express();
-const jwt = require('express-jwt');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
@@ -11,12 +10,29 @@ const multer = require('multer');
 const fs = require('fs');
 var ObjectID = require('mongodb').ObjectID;
 
+//auth
+var GoogleStrategy = require('passport-google-oauth2').Strategy;
+const GOOGLE_CLIENT_ID = '23775553991-lbdkrcjvuki43tm56ofsv54ib0fnros6.apps.googleusercontent.com';
+const GOOGLE_CLIENT_SECRET = 'Sw5gtgBAmRnKmnzH2fNj_35g';
+const passport = require('passport');
+const jwt = require('jsonwebtoken');
+const passportJWT = require("passport-jwt");
+var ExtractJwt = passportJWT.ExtractJwt;
+var JwtStrategy = passportJWT.Strategy;
+var jwtOptions = {}
+jwtOptions.jwtFromRequest = ExtractJwt.fromAuthHeader();
+jwtOptions.secretOrKey = 'tasmanianDevil';
+//auth
+
 mongoose.connect('mongodb://localhost/presets');
 var conn = mongoose.connection;
 var GridFsStorage = require('multer-gridfs-storage');
 var Grid = require('gridfs-stream');
 Grid.mongo = mongoose.mongo;
 var gfs = Grid(conn.db);
+
+var Preset = require('./preset');
+var User = require('./user');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -31,19 +47,94 @@ app.use(function (req, res, next) {
   next();
 });
 
-
-//const authCheck = jwt({
-//  secret: 'YOUR-AUTH0-CLIENT-SECRET',
-//  audience: 'YOUR-AUTH0-CLIENT-ID'
-//});
-const authCheck = jwt({
-  secret: 'xWpmkoAEdkPyBJTH5Y3_PvG79N6WKXzfbN-rN_h0wlWQDwAfZCakfVN8SyWZmh4K',
-  audience: 'IZ3GZtcNIwZZHEXtzroj5rprgJWm053V'
+// config passport
+passport.serializeUser(function serialize(user, done) {
+  done(null, user);
 });
 
+passport.deserializeUser(function deserialize(obj, done) {
+  done(null, obj);
+});
 
-var Preset = require('./preset');
-var User = require('./user');
+passport.use(new GoogleStrategy({
+  clientID: GOOGLE_CLIENT_ID,
+  clientSecret: GOOGLE_CLIENT_SECRET,
+  callbackURL: 'http://localhost:3001/auth/google/callback'
+},
+  function (request, accessToken, refreshToken, profile, done) {
+    User.findOne({ email: profile.email }, function (err, user) {
+      if (err) {
+        console.log(err);  // handle errors!
+      }
+      if (!err && user !== null) {
+        done(null, user);
+      } else {
+        user = new User({
+          oauthID: profile.id,
+          email: profile.email,
+          name: profile.displayName,
+          created: Date.now()
+        });
+        user.save(function (err) {
+          if (err) {
+            console.log(err);  // handle errors!
+          } else {
+            console.log("saving user ...");
+            done(null, user);
+          }
+        });
+      }
+    });
+  }
+));
+
+app.use(passport.initialize());
+
+app.get('/auth/google', passport.authenticate('google', {
+  failureRedirect: 'http://localhost:4200/login',
+  scope: [
+    'https://www.googleapis.com/auth/plus.login',
+    'https://www.googleapis.com/auth/plus.profile.emails.read'
+  ]
+}), function (req, res) {
+  res.redirect('http://localhost:4200/presets?token=' + '');
+});
+
+// handle google callback
+app.get('/auth/google/callback', passport.authenticate('google', {
+  failureRedirect: 'http://localhost:4200/login'
+}),
+  function (req, res) {
+    console.log("Nagarjuna2", req.user);
+    var payload = { email: req.user.email };
+    console.log('payload from login', payload);
+    var token = jwt.sign(payload, jwtOptions.secretOrKey, { expiresIn: '1h' });
+    res.redirect('http://localhost:4200/presets?pageNumber=1&searchTerm=&previouslySearchedTerm=&token=' + token);
+  });
+
+var strategy = new JwtStrategy(jwtOptions, function (jwt_payload, next) {
+  User.findOne({ 'email': jwt_payload.email }, function (err, user) {
+    if (err) {
+      console.log(err);
+      throw err;
+    }
+    if (user) {
+      next(null, user);
+    } else {
+      console.log('Email not found');
+      next(null, false);
+    }
+  });
+});
+
+passport.use(strategy);
+
+// parse application/json
+app.use(bodyParser.json())
+
+app.get("/secret", passport.authenticate('jwt', { session: false }), function (req, res) {
+  res.json({ message: "Success! You can not see this without a token " + req.user });
+});
 
 app.get('/api/presets', (req, res) => {
   Preset.find({}, function (err, presets) {
@@ -101,13 +192,13 @@ app.post('/api/user', (req, res) => {
   });
 });
 
-app.post('/api/preset', (req, res) => {
-  console.log(req.body.email);
+app.post('/api/preset', passport.authenticate('jwt', { session: false }), (req, res) => {
+  console.log('Post preset email', req.user.email);
   var presetInstance = new Preset();
   presetInstance.name = req.body.name;
   presetInstance.description = req.body.description;
   presetInstance.technology = req.body.technology;
-  presetInstance.email = req.body.email;
+  presetInstance.email = req.user.email;
   presetInstance.audioFileId = req.body.audioFileId;
   presetInstance._id = new ObjectID();
 
@@ -121,8 +212,8 @@ app.post('/api/preset', (req, res) => {
   });
 });
 
-app.get('/api/preset/user/:userid', authCheck, (req, res) => {
-  Preset.find({ 'email': req.params.userid }, function (err, presets) {
+app.get('/api/preset/profile', passport.authenticate('jwt', { session: false }), (req, res) => {
+  Preset.find({ 'email': req.user.email }, function (err, presets) {
     if (err) {
       throw err;
     }
@@ -135,7 +226,7 @@ var storage = GridFsStorage({
   gfs: gfs,
   filename: function (req, file, cb) {
     var datetimestamp = Date.now();
-    cb(null,  new ObjectID() + '.'  + file.originalname.split('.')[file.originalname.split('.').length - 1]);
+    cb(null, new ObjectID() + '.' + file.originalname.split('.')[file.originalname.split('.').length - 1]);
   },
   /** With gridfs we can store aditional meta-data along with the file */
   metadata: function (req, file, cb) {

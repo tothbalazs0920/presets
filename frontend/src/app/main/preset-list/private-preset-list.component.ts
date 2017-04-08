@@ -22,8 +22,7 @@ export class PrivatePresetListComponent extends PresetListComponent implements O
     }
 
     ngOnInit(): void {
-        let email = localStorage.getItem('preset_profile');
-        this.presetService.getPersonalPresets(email)
+        this.presetService.getPersonalPresets()
             .then(presets => this.presets = presets);
     }
 }
