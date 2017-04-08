@@ -1,8 +1,7 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
-import { HttpModule } from '@angular/http';
-import { AUTH_PROVIDERS } from 'angular2-jwt';
+
 
 import { AppComponent } from './app.component';
 import { routing, routedComponents } from './app.routing';
@@ -17,7 +16,8 @@ import { UserService } from './user/user.service';
 import { Ng2Bs3ModalModule } from 'ng2-bs3-modal/ng2-bs3-modal';
 import { PresetModal } from './preset-modal/preset-modal.component';
 import { FileUploadModule } from 'ng2-file-upload';
-
+import {  Http, HttpModule, RequestOptions, XHRBackend } from '@angular/http';
+import { AuthHttp } from './auth-http/auth-http';
 
 @NgModule({
   imports: [
@@ -35,8 +35,14 @@ import { FileUploadModule } from 'ng2-file-upload';
     PresetModal
   ],
   providers: [
+  {
+      provide: AuthHttp,
+      useFactory: (backend: XHRBackend, options: RequestOptions) => {
+        return new AuthHttp(backend, options);
+      },
+      deps: [XHRBackend, RequestOptions]
+    },
     PresetService,
-    AUTH_PROVIDERS,
     AuthService,
     AuthGuard,
     AudioService,

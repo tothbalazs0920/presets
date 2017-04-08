@@ -13,15 +13,6 @@ export class UserService {
 
     constructor(private http: Http, private authHttp: AuthHttp) { }
 
-    addUserIfDoesNotExist(user: User) {
-        let headers = new Headers({ 'Content-Type': 'application/json' });
-        let options = new RequestOptions({ headers: headers });
-
-        return this.http.post(this.addUserUrl, JSON.stringify(user), options)
-            .toPromise()
-            .then(res => res.json())
-            .catch(this.handleError);
-    }
 
     private extractData(res: Response) {
         let body = res.json();

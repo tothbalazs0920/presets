@@ -52,7 +52,6 @@ export class UploadComponent {
     }
 
     save(): void {
-        this.preset.email = localStorage.getItem('preset_profile');
         this.presetService.savePreset(this.preset)
             .then();
     }

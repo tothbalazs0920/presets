@@ -44,7 +44,7 @@ export class PresetModal implements OnInit {
     }
 
     save(): void {
-        this.preset.email = this.authService.user.email;
+        //this.preset.email = this.authService.user.email;
         this.presetService.savePreset(this.preset)
             .then(result => this.presets.push(this.preset));
     }

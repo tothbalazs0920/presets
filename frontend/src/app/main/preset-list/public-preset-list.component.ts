@@ -44,9 +44,12 @@ export class PublicPresetListComponent extends PresetListComponent implements On
                 if (Object.keys(params).length === 0) {
                     this.queryObject.pageNumber = 1;
                 } else {
-                this.queryObject.pageNumber = +params['pageNumber'];
-                this.queryObject.searchTerm = params['searchTerm'] || '';
-                this.queryObject.previouslySearchedTerm = params['previouslySearchedTerm'] || '';
+                    if (params['token']) {
+                        localStorage.setItem("token", params['token']);
+                    }
+                    this.queryObject.pageNumber = +params['pageNumber'];
+                    this.queryObject.searchTerm = params['searchTerm'] || '';
+                    this.queryObject.previouslySearchedTerm = params['previouslySearchedTerm'] || '';
                 }
                 this.getSearchResult(this.queryObject.pageNumber);
             }
@@ -73,5 +76,5 @@ export class PublicPresetListComponent extends PresetListComponent implements On
         this.queryObject.pageNumber = pageNumber;
         this.router.navigate(['/presets'], { queryParams: this.queryObject });
     }
-    
+
 }
