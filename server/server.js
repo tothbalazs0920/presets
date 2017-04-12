@@ -212,6 +212,48 @@ app.post('/api/preset', passport.authenticate('jwt', { session: false }), (req, 
   });
 });
 
+app.put('/api/preset', passport.authenticate('jwt', { session: false }), (req, res) => {
+  var presetInstance = new Preset();
+  presetInstance.name = req.body.name;
+  presetInstance.description = req.body.description;
+  presetInstance.technology = req.body.technology;
+  presetInstance.email = req.user.email;
+  presetInstance.audioFileId = req.body.audioFileId;
+  presetInstance._id = req.body._id;
+
+  presetInstance.update(function (err) {
+    if (err) {
+      console.log('error:', err);
+      res.status(500).send();
+      return;
+    }
+    res.status(204).send();
+  });
+});
+
+app.get('/api/preset/:id', (req, res) => {
+  Preset.findOne({ '_id': req.body._id }, function (err, preset) {
+    if (err) {
+      throw err;
+    }
+    res.json(preset);
+  });
+});
+
+app.delete('/api/preset', passport.authenticate('jwt', { session: false }), (req, res) => {
+  var presetInstance = new Preset();
+  presetInstance._id = req.body._id;
+
+  presetInstance.remove(function (err) {
+    if (err) {
+      console.log('error:', err);
+      res.status(500).send();
+      return;
+    }
+    res.status(204).send();
+  });
+});
+
 app.get('/api/preset/profile', passport.authenticate('jwt', { session: false }), (req, res) => {
   Preset.find({ 'email': req.user.email }, function (err, presets) {
     if (err) {
