@@ -13,6 +13,7 @@ export class PresetService {
   private presetListUrl = 'http://localhost:3001/api/presets';
   private presetUpdateUrl = 'http://localhost:3001/api/preset';
   private personalPresetListUrl = 'http://localhost:3001/api/preset/profile';
+  private downloadPresetUrl = 'http://localhost:3001/api/presetfile/';
 
   constructor(private http: Http, private authHttp: AuthHttp) { }
   getPresets() {
@@ -46,6 +47,10 @@ export class PresetService {
     if (limit) params.set('limit', String(limit))
 
     return this.http.get('http://localhost:3001/api/presetList', { search: params }).map(res => res.json());
+  }
+
+  downloadPreset(presetId: string) {
+    return this.downloadPresetUrl + presetId;
   }
 
   private handleError(error: any): Promise<any> {

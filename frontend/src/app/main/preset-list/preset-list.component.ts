@@ -47,4 +47,8 @@ export class PresetListComponent {
     return false;
   }
 
+  download(presetId: string) {
+    return window.open('http://localhost:3001/api/presetfile/' + presetId);
+  }
+
 }

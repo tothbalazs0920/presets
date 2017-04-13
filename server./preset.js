@@ -19,7 +19,7 @@ var presetSchema = new Schema({
   author: String,
   album: String,
   songTitle: String,
-  preset: String,
+  presetId: String,
   img: String,
   price: Number,
   currency: String,

@@ -16,7 +16,7 @@ export class Preset {
   author: string;
   album: string;
   songTitle: string;
-  preset: string;
+  presetId: string;
   img: string;
   price: number;
   currency: string;

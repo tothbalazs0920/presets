@@ -10,7 +10,7 @@
     </ul>
     <ul class="nav navbar-nav navbar-right">
       <li>
-        <a (click)=authService.login() *ngIf="!authService.loggedIn()">Log In</a>
+        <a href="http://localhost:3001/auth/google" *ngIf="!authService.loggedIn()">Log In</a>
       </li>
       <li>
         <a (click)=authService.logout() *ngIf="authService.loggedIn()">Log Out</a>

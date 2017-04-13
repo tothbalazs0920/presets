@@ -105,9 +105,7 @@ app.get('/auth/google/callback', passport.authenticate('google', {
   failureRedirect: 'http://localhost:4200/login'
 }),
   function (req, res) {
-    console.log("Nagarjuna2", req.user);
     var payload = { email: req.user.email };
-    console.log('payload from login', payload);
     var token = jwt.sign(payload, jwtOptions.secretOrKey, { expiresIn: '1h' });
     res.redirect('http://localhost:4200/presets?pageNumber=1&searchTerm=&previouslySearchedTerm=&token=' + token);
   });
@@ -193,7 +191,6 @@ app.post('/api/user', (req, res) => {
 });
 
 app.post('/api/preset', passport.authenticate('jwt', { session: false }), (req, res) => {
-  console.log('Post preset email', req.user.email);
   var presetInstance = new Preset();
   presetInstance.name = req.body.name;
   presetInstance.description = req.body.description;
@@ -201,6 +198,7 @@ app.post('/api/preset', passport.authenticate('jwt', { session: false }), (req, 
   presetInstance.email = req.user.email;
   presetInstance.audioFileId = req.body.audioFileId;
   presetInstance._id = new ObjectID();
+  presetInstance.presetId = req.body.presetId;
 
   presetInstance.save(function (err) {
     if (err) {
@@ -212,6 +210,7 @@ app.post('/api/preset', passport.authenticate('jwt', { session: false }), (req, 
   });
 });
 
+/*
 app.put('/api/preset', passport.authenticate('jwt', { session: false }), (req, res) => {
   var presetInstance = new Preset();
   presetInstance.name = req.body.name;
@@ -253,6 +252,7 @@ app.delete('/api/preset', passport.authenticate('jwt', { session: false }), (req
     res.status(204).send();
   });
 });
+*/
 
 app.get('/api/preset/profile', passport.authenticate('jwt', { session: false }), (req, res) => {
   Preset.find({ 'email': req.user.email }, function (err, presets) {
@@ -284,7 +284,6 @@ var upload = multer({ //multer settings
 /** API path that will upload the files */
 app.post('/api/upload', function (req, res) {
   upload(req, res, function (err) {
-    console.log(req.file);
     if (err) {
       console.log(err);
       res.json({ error_code: 1, err_desc: err });
@@ -314,6 +313,69 @@ app.get('/api/audio/:filename', function (req, res) {
     var readstream = gfs.createReadStream({
       filename: files[0].filename,
       root: "audio"
+    });
+    /** set the proper content type */
+    res.set('Content-Type', files[0].contentType)
+    /** return response */
+    return readstream.pipe(res);
+  });
+});
+
+//binary presets
+/** Setting up storage using multer-gridfs-storage */
+var presetStorage = GridFsStorage({
+  gfs: gfs,
+  filename: function (req, presetFile, cb) {
+    console.log('presetfile in GridFsStorage: ', presetFile);
+    var datetimestamp = Date.now();
+    cb(null, new ObjectID() + '.' + presetFile.originalname.split('.')[presetFile.originalname.split('.').length - 1]);
+  },
+  /** With gridfs we can store aditional meta-data along with the file */
+  metadata: function (req, presetFile, cb) {
+    cb(null, { originalname: presetFile.originalname });
+  },
+  root: 'presetFile' //root name for collection to store files into
+});
+
+var presetUpload = multer({ //multer settings
+  storage: presetStorage
+}).single('presetFile');
+
+/** API path that will upload the files */
+app.post('/api/presetfile/upload', function (req, res) {
+  presetUpload(req, res, function (err) {
+    console.log('filee: ',req.file.filename);
+    if (err) {
+      console.log(err);
+      res.json({ error_code: 1, err_desc: err });
+      return;
+    }
+    res.json({
+      error_code: 0,
+      err_desc: null,
+      filename: req.file.filename,
+      originalname: req.file.originalname
+    });
+  });
+});
+
+app.get('/api/presetfile/:filename', function (req, res) {
+  console.log('filename');
+  console.log('filename', req.params.filename);
+  gfs.collection('presetFile'); //set collection name to lookup into
+
+  /** First check if file exists */
+  gfs.files.find({ filename: req.params.filename }).toArray(function (err, files) {
+    if (!files || files.length === 0) {
+      return res.status(404).json({
+        responseCode: 1,
+        responseMessage: "error"
+      });
+    }
+    /** create read stream */
+    var readstream = gfs.createReadStream({
+      filename: files[0].filename,
+      root: "presetFile"
     });
     /** set the proper content type */
     res.set('Content-Type', files[0].contentType)
