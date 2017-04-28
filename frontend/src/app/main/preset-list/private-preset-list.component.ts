@@ -5,6 +5,7 @@ import { Preset } from './../preset/preset';
 import { PresetService } from './../preset/preset.service';
 import { AudioService } from './../audio-player/audio.service'
 import { PresetListComponent } from './preset-list.component';
+import * as _ from 'underscore';
 
 @Component({
     selector: 'private-preset-list',
@@ -18,11 +19,21 @@ export class PrivatePresetListComponent extends PresetListComponent implements O
         private presetService: PresetService,
         private authService: AuthService,
         private AudioService: AudioService) {
-            super(AudioService);
+        super(AudioService);
     }
 
     ngOnInit(): void {
         this.presetService.getPersonalPresets()
             .then(presets => this.presets = presets);
+    }
+
+    deletePreset(presetId: string): void {
+        this.presetService.deletePreset(presetId)
+            .then(x => {
+                this.presets = _(this.presets)
+                    .filter(function (item) {
+                        return item._id !== presetId;
+                    });
+            });
     }
 }

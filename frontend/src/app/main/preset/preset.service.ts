@@ -53,6 +53,14 @@ export class PresetService {
     return this.downloadPresetUrl + presetId;
   }
 
+  deletePreset(presetId: string) {
+    return this.authHttp
+      .delete(this.presetUpdateUrl + "/" + presetId)
+      .toPromise()
+      .then(response => console.log(response))
+      .catch(this.handleError);
+  }
+
   private handleError(error: any): Promise<any> {
     console.error('An error occurred', error);
     return Promise.reject(error.message || error);

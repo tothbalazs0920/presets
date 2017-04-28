@@ -23,4 +23,5 @@ export class Preset {
   audioFileId: string;
   originalAudoFileName: string;
   email: string;
+  constructor(theName: string) { this.name = theName; }
 }

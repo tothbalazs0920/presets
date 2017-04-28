@@ -42,7 +42,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use(function (req, res, next) {
   res.setHeader("Access-Control-Allow-Origin", "http://localhost:4200");
   res.setHeader("Access-Control-Allow-Credentials", true);
-  res.setHeader("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST,PUT");
+  res.setHeader("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST,PUT,DELETE");
   res.setHeader("Access-Control-Allow-Headers", "Access-Control-Allow-Headers, Origin, Accept, Authorization, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers");
   next();
 });
@@ -238,10 +238,12 @@ app.get('/api/preset/:id', (req, res) => {
     res.json(preset);
   });
 });
+*/
 
-app.delete('/api/preset', passport.authenticate('jwt', { session: false }), (req, res) => {
+app.delete('/api/preset/:id', passport.authenticate('jwt', { session: false }), (req, res) => {
+  console.log('req.params.id: ', req.params.id);
   var presetInstance = new Preset();
-  presetInstance._id = req.body._id;
+  presetInstance._id = req.params.id;
 
   presetInstance.remove(function (err) {
     if (err) {
@@ -252,7 +254,6 @@ app.delete('/api/preset', passport.authenticate('jwt', { session: false }), (req
     res.status(204).send();
   });
 });
-*/
 
 app.get('/api/preset/profile', passport.authenticate('jwt', { session: false }), (req, res) => {
   Preset.find({ 'email': req.user.email }, function (err, presets) {

@@ -22,17 +22,19 @@
     "@angular/platform-browser-dynamic": "2.4.10",
     "@angular/platform-server": "2.4.10",
     "@angular/router": "3.4.10",
+    "@types/underscore": "^1.8.0",
     "angular2-fontawesome": "~0.8.0",
     "angular2-jwt": "^0.1.23",
     "bootstrap": "~3.3.0",
     "core-js": "^2.4.1",
     "font-awesome": "^4.7.0",
     "ng2-bs3-modal": "^0.10.4",
+    "ng2-file-upload": "^1.2.0",
+    "ng2-pagination": "2.0.1",
     "rxjs": "5.2.0",
     "ts-helpers": "^1.1.1",
-    "zone.js": "^0.7.2",
-    "ng2-pagination": "2.0.1",
-    "ng2-file-upload": "^1.2.0"
+    "underscore": "^1.8.3",
+    "zone.js": "^0.8.5"
   },
   "devDependencies": {
     "@types/jasmine": "2.5.38",
