@@ -19,7 +19,7 @@ export class AuthService {
   }
 
   loggedIn() {
-    //name of the key in local storage
+    // name of the key in local storage
     return tokenNotExpired('token');
   }
 }

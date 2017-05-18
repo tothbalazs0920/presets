@@ -1,5 +1,5 @@
 /*
-import { PublicPresetListComponent } from "./public-preset-list.component";
+import { PrivatePresetListComponent } from "./private-preset-list.component";
 import { ComponentFixture, TestBed, async } from "@angular/core/testing";
 import { DebugElement } from "@angular/core";
 import { By } from "@angular/platform-browser";
@@ -12,43 +12,50 @@ import { AudioService } from "../audio-player/audio.service";
 import { AuthService } from "../user/auth.service";
 import { PresetList } from './preset-list.interface';
 import { Preset } from './../preset/preset';
+import { AudioPlayer } from './../audio-player/audio-player.component';
 
-describe('PublicPresetListComponent', () => {
+describe('PrivatePresetListComponent', () => {
 
-    let comp: PublicPresetListComponent;
-    let fixture: ComponentFixture<PublicPresetListComponent>;
+    let comp: PrivatePresetListComponent;
+    let fixture: ComponentFixture<PrivatePresetListComponent>;
     let de: DebugElement;
     let el: HTMLElement;
     let spy;
 
-    beforeEach(() => {
+    beforeEach(async(() => {
+        debugger;
         TestBed.configureTestingModule({
-            declarations: [PublicPresetListComponent], // declare the test component
+            declarations: [
+                AudioPlayer, 
+                PrivatePresetListComponent
+                ], // declare the test component
             providers: [
-                { AudioService },
-                { PresetService },
-                { AuthService },
-                { Router },
-                { provide: ActivatedRoute, useValue: { 'params': Observable.from([{ 'pageNumber': 1 }]) } },
+                PresetService,
+                AuthService,
+                AudioService
             ]
         });
-
-        fixture = TestBed.createComponent(PublicPresetListComponent);
+        try {
+        fixture = TestBed.createComponent(PrivatePresetListComponent);
         comp = fixture.componentInstance;
-
 
         let presetService = fixture.debugElement.injector.get(PresetService);
 
         let presetList: PresetList<Preset>;
-        presetList.presets.push(new Preset());
+        let preset1 = new Preset();
+        preset1.name = "Preset 1";
+        presetList.presets.push(preset1);
 
-        spy = spyOn(presetService, 'getSearchResult')
-            .and.returnValue(Observable.of(presetList));
+        spy = spyOn(presetService, 'getPresonalPresets')
+            .and.returnValue(Promise.resolve(presetList));
+        } catch(e) {
+            console.log(e);
+        }
 
         // query for the title <h1> by CSS element selector
-        de = fixture.debugElement.query(By.css('h1'));
-        el = de.nativeElement;
-    });
+       // de = fixture.debugElement.query(By.css('h1'));
+      //  el = de.nativeElement;
+    }));
 
     it('should not show quote before OnInit', () => {
         debugger;
@@ -56,5 +63,4 @@ describe('PublicPresetListComponent', () => {
         expect(spy.calls.any()).toBe(false, 'getQuote not yet called');
     });
 });
-
 */
