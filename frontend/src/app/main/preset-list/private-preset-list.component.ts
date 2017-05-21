@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from './../user/auth.service';
-
 import { Preset } from './../preset/preset';
 import { PresetService } from './../preset/preset.service';
 import { AudioService } from './../audio-player/audio.service';

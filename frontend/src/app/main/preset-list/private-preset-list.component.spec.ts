@@ -1,66 +1,65 @@
-/*
 import { PrivatePresetListComponent } from "./private-preset-list.component";
 import { ComponentFixture, TestBed, async } from "@angular/core/testing";
 import { DebugElement } from "@angular/core";
-import { By } from "@angular/platform-browser";
+import { By } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from "@angular/router";
 import { Observable } from "rxjs/Observable";
-import 'rxjs/add/observable/from';
 import 'rxjs/add/observable/of';
 import { PresetService } from "../preset/preset.service";
+import { PresetServiceMock } from "../preset/preset.service.mock";
 import { AudioService } from "../audio-player/audio.service";
+import { AudioServiceMock } from "../audio-player/audio.service.mock";
 import { AuthService } from "../user/auth.service";
+import { AuthServiceMock } from "../user/auth.service.mock";
 import { PresetList } from './preset-list.interface';
 import { Preset } from './../preset/preset';
 import { AudioPlayer } from './../audio-player/audio-player.component';
+import Spy = jasmine.Spy;
+import * as data from './data.mock.json';
 
 describe('PrivatePresetListComponent', () => {
-
-    let comp: PrivatePresetListComponent;
+    let component: PrivatePresetListComponent;
     let fixture: ComponentFixture<PrivatePresetListComponent>;
-    let de: DebugElement;
-    let el: HTMLElement;
     let spy;
+    let audioServiceMock;
+    let presets = data;
 
     beforeEach(async(() => {
-        debugger;
         TestBed.configureTestingModule({
             declarations: [
-                AudioPlayer, 
+                AudioPlayer,
                 PrivatePresetListComponent
-                ], // declare the test component
+            ],
             providers: [
-                PresetService,
-                AuthService,
-                AudioService
+                { provide: PresetService, useClass: PresetServiceMock },
+                { provide: AuthService, useClass: AuthServiceMock },
+                { provide: AudioService, useClass: AudioServiceMock }
             ]
-        });
-        try {
-        fixture = TestBed.createComponent(PrivatePresetListComponent);
-        comp = fixture.componentInstance;
-
-        let presetService = fixture.debugElement.injector.get(PresetService);
-
-        let presetList: PresetList<Preset>;
-        let preset1 = new Preset();
-        preset1.name = "Preset 1";
-        presetList.presets.push(preset1);
-
-        spy = spyOn(presetService, 'getPresonalPresets')
-            .and.returnValue(Promise.resolve(presetList));
-        } catch(e) {
-            console.log(e);
-        }
-
-        // query for the title <h1> by CSS element selector
-       // de = fixture.debugElement.query(By.css('h1'));
-      //  el = de.nativeElement;
+        }).compileComponents()
+            .then(() => {
+                    fixture = TestBed.createComponent(PrivatePresetListComponent);
+                    component = fixture.componentInstance;
+                    let presetService = fixture.debugElement.injector.get(PresetService);
+                    spyOn(presetService, 'getPersonalPresets').and.returnValue(Observable.of(presets));
+            });
     }));
 
-    it('should not show quote before OnInit', () => {
-        debugger;
-        expect(el.textContent).toBe('', 'nothing displayed');
-        expect(spy.calls.any()).toBe(false, 'getQuote not yet called');
+    it('should display presets', async(() => {
+        component.ngOnInit();
+        fixture.detectChanges();
+        fixture.whenStable().then(() => {
+            let debugElements = fixture.debugElement.queryAll(By.css('.panel-body'));
+            expect(debugElements.length).toBe(2);
+        });
+    }));
+
+    it('should set current and playing fields when play button is clicked', () => {
+        component.ngOnInit();
+        fixture.detectChanges();
+        let playButtons: DebugElement[] = fixture.debugElement.queryAll(By.css('.fa-play'));
+        playButtons[0].nativeElement.click();
+        fixture.detectChanges();
+        expect(component.current).toBe(presets[0]._id);
+        expect(component.playing).toBe(true);
     });
 });
-*/

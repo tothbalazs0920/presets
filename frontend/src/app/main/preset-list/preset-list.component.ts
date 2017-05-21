@@ -15,6 +15,7 @@ export class PresetListComponent {
   }
 
   handlePlay(_id: string, audioFileId: number) {
+    console.log('Naga', _id);
     this.current = _id;
     this.audioService.play(audioFileId);
     this.playing = true;
