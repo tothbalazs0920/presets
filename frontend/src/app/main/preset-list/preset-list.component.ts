@@ -1,21 +1,21 @@
-import { Component, OnInit,  ViewChild } from '@angular/core';
-import { Preset } from './../preset/preset';
+import { Component } from '@angular/core';
 import { AudioService } from './../audio-player/audio.service';
 
 
 @Component({
-  selector: 'preset-list'
+  selector: 'app-preset-list'
 })
+
 export class PresetListComponent {
   playing = false;
   current?: string;
-  
 
   constructor(
     protected audioService: AudioService) {
   }
 
   handlePlay(_id: string, audioFileId: number) {
+    console.log('Naga', _id);
     this.current = _id;
     this.audioService.play(audioFileId);
     this.playing = true;
@@ -28,7 +28,7 @@ export class PresetListComponent {
   }
 
   showPause(id: string) {
-    if (this.current != id) {
+    if (this.current !== id) {
       return false;
     }
     if (this.current === id && this.playing) {
@@ -38,13 +38,17 @@ export class PresetListComponent {
   }
 
   showPlay(id: string) {
-    if (this.current != id) {
+    if (this.current !== id) {
       return true;
     }
     if (this.current === id && !this.playing) {
       return true;
     }
     return false;
+  }
+
+  download(presetId: string) {
+    return window.open('http://localhost:3001/api/presetfile/' + presetId);
   }
 
 }

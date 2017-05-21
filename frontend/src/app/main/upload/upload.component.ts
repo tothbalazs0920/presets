@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { FileUploader } from 'ng2-file-upload';
 import { Preset } from './../preset/preset';
 import { AuthService } from './../user/auth.service'
 import { PresetService } from './../preset/preset.service';
+import { ModalComponent } from 'ng2-bs3-modal/ng2-bs3-modal';
 
 
 @Component({
@@ -12,14 +13,17 @@ import { PresetService } from './../preset/preset.service';
 export class UploadComponent {
     preset: Preset;
     private URL = 'http://localhost:3001/api/upload';
+    private presetUploadUrl = 'http://localhost:3001/api/presetfile/upload';
     public uploader: FileUploader;
+    public presetUploader: FileUploader;
     public hasBaseDropZoneOver: boolean = false;
     public hasAnotherDropZoneOver: boolean = false;
+     @ViewChild('myModal')
+     modal: ModalComponent;
 
     constructor(
         private authService: AuthService,
         private presetService: PresetService) {
-
     }
 
     ngOnInit(): void {
@@ -28,31 +32,31 @@ export class UploadComponent {
         this.uploader.onAfterAddingFile = () => this.onUploaderAfterAddingFile();
         this.uploader.onWhenAddingFileFailed = () => this.onUploaderWhenAddingFileFailed();
         this.uploader.onCompleteItem = (item: any, response: any, status: any, headers: any) => {
-            console.log(JSON.parse(response).filename);
             this.preset.audioFileId = JSON.parse(response).filename;
-            console.log("");
+        };
+
+        this.presetUploader = new FileUploader({ url: this.presetUploadUrl });
+        this.presetUploader.onAfterAddingFile = () => {
+            this.presetUploader.queue[0].alias = 'presetFile';
+            this.presetUploader.queue[0].upload(); 
+        };
+        this.presetUploader.onCompleteItem = (item: any, response: any, status: any, headers: any) => {
+            console.log(JSON.parse(response).filename);
+            this.preset.presetId = JSON.parse(response).filename;
         };
     }
 
     onUploaderAfterAddingFile(): void {
         this.uploader.queue[0].upload();
-        console.log('');
     }
 
-    onUploaderWhenAddingFileFailed(): void {
-
-    }
-
-    public fileOverBase(e: any): void {
-        this.hasBaseDropZoneOver = e;
-    }
-
-    public fileOverAnother(e: any): void {
-        this.hasAnotherDropZoneOver = e;
-    }
+    onUploaderWhenAddingFileFailed(): void {}
 
     save(): void {
         this.presetService.savePreset(this.preset)
-            .then();
+            .then(x => {
+                this.modal.open();
+                setTimeout(() => this.modal.close(), 700)
+            });
     }
 }

@@ -76,5 +76,4 @@ export class PublicPresetListComponent extends PresetListComponent implements On
         this.queryObject.pageNumber = pageNumber;
         this.router.navigate(['/presets'], { queryParams: this.queryObject });
     }
-
 }

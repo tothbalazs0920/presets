@@ -14,7 +14,6 @@ import { AudioService } from './audio-player/audio.service';
 import { AudioFileService } from './audio-player/audio-file.service';
 import { UserService } from './user/user.service';
 import { Ng2Bs3ModalModule } from 'ng2-bs3-modal/ng2-bs3-modal';
-import { PresetModal } from './preset-modal/preset-modal.component';
 import { FileUploadModule } from 'ng2-file-upload';
 import {  Http, HttpModule, RequestOptions, XHRBackend } from '@angular/http';
 import { AuthHttp } from './auth-http/auth-http';
@@ -31,8 +30,7 @@ import { AuthHttp } from './auth-http/auth-http';
   declarations: [
     AppComponent,
     routedComponents,
-    AudioPlayer,
-    PresetModal
+    AudioPlayer
   ],
   providers: [
   {
