@@ -27,6 +27,6 @@ var presetSchema = new Schema({
   email: String
 });
 
-var Preset = mongoose.model('Preset', presetSchema);
+var Preset = mongoose.model('Presets', presetSchema);
 
 module.exports = Preset;
