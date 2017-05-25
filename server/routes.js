@@ -1,10 +1,6 @@
 var presetController = require("./presetController");
 var userController = require("./userController");
 
-var GoogleStrategy = require('passport-google-oauth2').Strategy;
-const GOOGLE_CLIENT_ID = '23775553991-lbdkrcjvuki43tm56ofsv54ib0fnros6.apps.googleusercontent.com';
-const GOOGLE_CLIENT_SECRET = 'Sw5gtgBAmRnKmnzH2fNj_35g';
-const passport = require('passport');
 const jwt = require('jsonwebtoken');
 const passportJWT = require("passport-jwt");
 var ExtractJwt = passportJWT.ExtractJwt;
@@ -12,8 +8,11 @@ var JwtStrategy = passportJWT.Strategy;
 var jwtOptions = {};
 jwtOptions.jwtFromRequest = ExtractJwt.fromAuthHeader();
 jwtOptions.secretOrKey = 'tasmanianDevil';
+var authentication = require('./authentication');
+var passport = authentication.getPassport();
 
 module.exports = function (app) {
+    app.use(passport.initialize());
 
     app.get('/api/presetList', function (req, res) {
         var perPage = 6;
@@ -29,10 +28,18 @@ module.exports = function (app) {
             });
     });
 
-    app.post('/api/preset', passport.authenticate('jwt', { session: false }), (req, res) => {
+    app.get('/api/preset/:id', (req, res) => {
+        presetController.getPresetsById(req.params.id)
+            .then(
+            result => {
+                return res.json(result);
+            });
+    });
+
+    app.put('/api/preset', passport.authenticate('jwt', { session: false }), (req, res) => {
         presetController.createPreset(
             req.body.name, req.body.description, req.body.technology, req.user.email, req.body.audioFileId, req.body.presetId)
-        .then(
+            .then(
             result => {
                 return res.json(result);
             });
@@ -62,41 +69,6 @@ module.exports = function (app) {
             });
     });
 
-
-    // config passport
-    passport.serializeUser(function serialize(user, done) {
-        done(null, user);
-    });
-
-    passport.deserializeUser(function deserialize(obj, done) {
-        done(null, obj);
-    });
-
-    passport.use(new GoogleStrategy({
-        clientID: GOOGLE_CLIENT_ID,
-        clientSecret: GOOGLE_CLIENT_SECRET,
-        callbackURL: 'http://localhost:3001/auth/google/callback'
-    },
-        function (request, accessToken, refreshToken, profile, done) {
-            return userController.getUser(profile.email)
-                .then(function (user) {
-                    if (user !== null) {
-                        done(null, user);
-                        return;
-                    } else {
-                        return userController.saveUser(profile.id, profile.email, profile.displayName);
-                    }
-                })
-                .then(function (result) {
-                    if (result) {
-                        console.log("saving user ...");
-                        done(null, result);
-                    }
-                });
-        }));
-
-    app.use(passport.initialize());
-
     app.get('/auth/google', passport.authenticate('google', {
         failureRedirect: 'http://localhost:4200/login',
         scope: [
@@ -117,23 +89,39 @@ module.exports = function (app) {
             res.redirect('http://localhost:4200/presets?pageNumber=1&searchTerm=&previouslySearchedTerm=&token=' + token);
         });
 
-    var strategy = new JwtStrategy(jwtOptions, function (jwt_payload, next) {
-        userController.getUser(jwt_payload.email)
-            .then(
-            user => {
-                if (user) {
-                    next(null, user);
-                } else {
-                    console.log('Email not found');
-                    next(null, false);
-                }
-            });
-    });
-
-    passport.use(strategy);
-
     app.get("/secret", passport.authenticate('jwt', { session: false }), function (req, res) {
         res.json({ message: "Success! You can not see this without a token " + req.user });
     });
 
 }
+
+/*
+app.post('/api/user', (req, res) => {
+  User.findOne({ 'email': req.body.email }, function (err, found) {
+    if (err) {
+      throw err;
+    }
+    if (found) {
+      res.status(204).send();
+      return;
+    } else {
+      var userInstance = new User();
+      userInstance.email = req.body.email;
+      userInstance.user_id = req.body.user_id;
+      userInstance.name = req.body.name;
+      userInstance.picture = req.body.picture;
+      userInstance.given_name = req.body.given_name;
+      userInstance.family_name = req.body.family_name;
+      userInstance.nickname = req.body.nickname;
+
+      userInstance.save(function (err) {
+        if (err) {
+          res.status(500).send();
+        }
+        res.status(204).send();
+      });
+    }
+  });
+});
+*/
+

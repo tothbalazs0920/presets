@@ -8,6 +8,17 @@ module.exports.getPresetList = function (page, perPage, callback) {
     presetDao.findPresetList(page, perPage, callback);
 }
 
+module.exports.getPresetsById = function (id) {
+    return presetDao.findPresetsById(id)
+        .then(
+        preset => {
+            return preset;
+        }
+        ).catch(
+        err => console.log(err)
+        );
+}
+
 module.exports.getPresetsByEmail = function (email) {
     return presetDao.findPresetsByEmail(email)
         .then(

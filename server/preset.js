@@ -1,8 +1,9 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
+// var ObjectId = mongoose.Types.ObjectId;
 
 var presetSchema = new Schema({
-  _id: String,
+ // _id: ObjectId,
   name: String,
   technology: String,
   soundcloudUrl: String,
