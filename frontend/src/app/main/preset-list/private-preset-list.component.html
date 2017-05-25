@@ -6,6 +6,7 @@
   <div class="panel panel-default preset">
     <div class="panel-heading">
       <h3 class="panel-title">{{preset.name}}</h3>
+      <h5 class="pull-left" (click)="editPreset(preset._id)">Edit</h5>
       <h5 class="pull-right" (click)="deletePreset(preset._id)">Delete</h5>
     </div>
     <div class="panel-body">

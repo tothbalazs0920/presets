@@ -16,6 +16,15 @@ export class PresetService {
   private downloadPresetUrl = 'http://localhost:3001/api/presetfile/';
 
   constructor(private http: Http, private authHttp: AuthHttp) { }
+
+  getPreset(id: string): Observable<any> {
+    return this.authHttp
+      .get(this.presetUpdateUrl + '/' + id)
+      .map((res: Response) => {
+        return res.json() as Preset;
+      });
+  }
+
   getPresets(): Observable<any> {
     return this.http
       .get(this.presetListUrl)
@@ -23,7 +32,6 @@ export class PresetService {
         return res.json() as Preset[];
       });
   }
-
 
   getPersonalPresets(): Observable<any> {
     return this.authHttp
@@ -35,7 +43,7 @@ export class PresetService {
 
   savePreset(preset: Preset) {
     return this.authHttp
-      .post(this.presetUpdateUrl, preset)
+      .put(this.presetUpdateUrl, preset)
       .toPromise()
       .then(response => console.log(response))
       .catch(this.handleError);
