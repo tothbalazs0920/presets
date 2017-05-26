@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+var mongoosastic = require("mongoosastic");
 mongoose.connect('mongodb://localhost/presets');
 var conn = mongoose.connection;
 mongoose.Promise = global.Promise;
@@ -39,28 +40,19 @@ module.exports.findPresetList = function (page, perPage, callback) {
 }
 
 module.exports.findPresetsById = function (id) {
-    return Preset.findOne({'_id' : id }).exec();
+    return Preset.findOne({ '_id': id }).exec();
 }
 
 module.exports.findPresetsByEmail = function (email) {
     return Preset.find({ 'email': email }).exec();
 }
 
-module.exports.createPreset = function (
-    name, description, technology, email, audioFileId, presetId) {
-    var presetInstance = new Preset();
-    presetInstance.name = name;
-    presetInstance.description = description;
-    presetInstance.technology = technology;
-    presetInstance.email = email;
-    presetInstance.audioFileId = audioFileId;
-    presetInstance._id = new ObjectID();
-    presetInstance.presetId = presetId;
+module.exports.savePreset = function (presetInstance) {
     return presetInstance.save();
 }
 
 module.exports.deletePreset = function (id) {
-    return Preset.findOne({ '_id' : id  }).remove().exec();
+    return Preset.findOne({ '_id': id }).remove().exec();
 }
 
 module.exports.findUser = function (email) {
@@ -76,6 +68,10 @@ module.exports.saveUser = function (oauthID, email, name) {
         created: Date.now()
     });
     return user.save();
+}
+
+module.exports.searchPresets = function (terms) {
+    return Preset.search({ query_string: { query: terms } }, { hydrate: false });
 }
 
 module.exports.gridFsEndpoints = function (app) {
@@ -193,6 +189,21 @@ module.exports.gridFsEndpoints = function (app) {
             res.set('Content-Type', files[0].contentType)
 
             return readstream.pipe(res);
+        });
+    });
+
+    app.get("/api/search", function (req, res) {
+        var perPage = 3;
+        var page = req.query.page > 0 ? req.query.page : 0
+        var terms = req.query.q;
+        Preset.search(
+            { query_string: { query: terms } }, 
+            { from: page, size: perPage, hydrate: true },
+             function (err, results) {
+            if (err) {
+                console.log(err);
+            }
+            return res.json(results);
         });
     });
 

@@ -1,6 +1,15 @@
 const mongoose = require('mongoose');
+var mongoosastic = require("mongoosastic");
 mongoose.connect('mongodb://localhost/presets');
+var conn = mongoose.connection;
 mongoose.Promise = global.Promise;
+
+const fs = require('fs');
+const multer = require('multer');
+var GridFsStorage = require('multer-gridfs-storage');
+var Grid = require('gridfs-stream');
+Grid.mongo = mongoose.mongo;
+var gfs = Grid(conn.db);
 
 var Preset = require('./preset');
 var User = require('./user');
@@ -30,27 +39,20 @@ module.exports.findPresetList = function (page, perPage, callback) {
         });
 }
 
+module.exports.findPresetsById = function (id) {
+    return Preset.findOne({ '_id': id }).exec();
+}
+
 module.exports.findPresetsByEmail = function (email) {
     return Preset.find({ 'email': email }).exec();
 }
 
-module.exports.createPreset = function (
-    name, description, technology, email, audioFileId, presetId) {
-    var presetInstance = new Preset();
-    presetInstance.name = name;
-    presetInstance.description = description;
-    presetInstance.technology = technology;
-    presetInstance.email = email;
-    presetInstance.audioFileId = audioFileId;
-    presetInstance._id = new ObjectID();
-    presetInstance.presetId = presetId;
+module.exports.savePreset = function (presetInstance) {
     return presetInstance.save();
 }
 
 module.exports.deletePreset = function (id) {
-    var presetInstance = new Preset();
-    presetInstance._id = id;
-    return presetInstance.remove();
+    return Preset.findOne({ '_id': id }).remove().exec();
 }
 
 module.exports.findUser = function (email) {
@@ -68,4 +70,141 @@ module.exports.saveUser = function (oauthID, email, name) {
     return user.save();
 }
 
+module.exports.searchPresets = function (terms) {
+    return Preset.search({ query_string: { query: terms } }, { hydrate: false });
+}
 
+module.exports.gridFsEndpoints = function (app) {
+
+    // Setting up storage using multer-gridfs-storage
+    var storage = GridFsStorage({
+        gfs: gfs,
+        filename: function (req, file, cb) {
+            var datetimestamp = Date.now();
+            cb(null, new ObjectID() + '.' + file.originalname.split('.')[file.originalname.split('.').length - 1]);
+        },
+        // With gridfs we can store aditional meta-data along with the file 
+        metadata: function (req, file, cb) {
+            cb(null, { originalname: file.originalname });
+        },
+        root: 'audio' //root name for collection to store files into
+    });
+
+    var upload = multer({ //multer settings
+        storage: storage
+    }).single('file');
+
+    // API path that will upload the files 
+    app.post('/api/upload', function (req, res) {
+        upload(req, res, function (err) {
+            if (err) {
+                console.log(err);
+                res.json({ error_code: 1, err_desc: err });
+                return;
+            }
+            res.json({
+                error_code: 0,
+                err_desc: null,
+                filename: req.file.filename,
+                originalname: req.file.originalname
+            });
+        });
+    });
+
+    app.get('/api/audio/:filename', function (req, res) {
+        gfs.collection('audio'); //set collection name to lookup into
+
+        // First check if file exists
+        gfs.files.find({ filename: req.params.filename }).toArray(function (err, files) {
+            if (!files || files.length === 0) {
+                return res.status(404).json({
+                    responseCode: 1,
+                    responseMessage: "error"
+                });
+            }
+            // create read stream 
+            var readstream = gfs.createReadStream({
+                filename: files[0].filename,
+                root: "audio"
+            });
+            // set the proper content type
+            res.set('Content-Type', files[0].contentType)
+            return readstream.pipe(res);
+        });
+    });
+
+    //binary presets
+    // Setting up storage using multer-gridfs-storage
+    var presetStorage = GridFsStorage({
+        gfs: gfs,
+        filename: function (req, presetFile, cb) {
+            var datetimestamp = Date.now();
+            cb(null, new ObjectID() + '.' + presetFile.originalname.split('.')[presetFile.originalname.split('.').length - 1]);
+        },
+        // With gridfs we can store aditional meta-data along with the file
+        metadata: function (req, presetFile, cb) {
+            cb(null, { originalname: presetFile.originalname });
+        },
+        root: 'presetFile' //root name for collection to store files into
+    });
+
+    var presetUpload = multer({ //multer settings
+        storage: presetStorage
+    }).single('presetFile');
+
+    // API path that will upload the files
+    app.post('/api/presetfile/upload', function (req, res) {
+        presetUpload(req, res, function (err) {
+            if (err) {
+                console.log(err);
+                res.json({ error_code: 1, err_desc: err });
+                return;
+            }
+            res.json({
+                error_code: 0,
+                err_desc: null,
+                filename: req.file.filename,
+                originalname: req.file.originalname
+            });
+        });
+    });
+
+    app.get('/api/presetfile/:filename', function (req, res) {
+        gfs.collection('presetFile'); //set collection name to lookup into
+
+        // First check if file exists 
+        gfs.files.find({ filename: req.params.filename }).toArray(function (err, files) {
+            if (!files || files.length === 0) {
+                return res.status(404).json({
+                    responseCode: 1,
+                    responseMessage: "error"
+                });
+            }
+
+            var readstream = gfs.createReadStream({
+                filename: files[0].filename,
+                root: "presetFile"
+            });
+
+            res.set('Content-Type', files[0].contentType)
+
+            return readstream.pipe(res);
+        });
+    });
+
+    app.get("/api/search", function (req, res) {
+        var perPage = 3;
+        var page = req.query.page > 0 ? req.query.page : 0
+        var terms = req.query.q;
+        Preset.search(
+            { query_string: { query: terms } }, 
+            { from: page, size: perPage, hydrate: true },
+             function (err, results) {
+            if (err) {
+                console.log(err);
+            }
+            return res.json(results);
+        });
+    });
+
+}

@@ -14,6 +14,7 @@ export class PresetService {
   private presetUpdateUrl = 'http://localhost:3001/api/preset';
   private personalPresetListUrl = 'http://localhost:3001/api/preset/profile';
   private downloadPresetUrl = 'http://localhost:3001/api/presetfile/';
+  private esSearchUrl = 'http://localhost:3001/api/search/';
 
   constructor(private http: Http, private authHttp: AuthHttp) { }
 
@@ -62,6 +63,18 @@ export class PresetService {
     }
 
     return this.http.get('http://localhost:3001/api/presetList', { search: params }).map(res => res.json());
+  }
+
+  getEsSearchResult(terms: string = '*', page = 1) {
+    let params: URLSearchParams = new URLSearchParams();
+    if (terms) {
+      params.set('q', terms);
+    }
+    if (page) {
+      params.set('page', String(page));
+    }
+
+    return this.http.get(this.esSearchUrl, { search: params }).map(res => res.json());
   }
 
   downloadPreset(presetId: string) {

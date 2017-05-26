@@ -2,9 +2,9 @@
 <button type="button" class="btn btn-default" onclick="location.href='http://localhost:3001/auth/google';" *ngIf="!authService.loggedIn()">Add Preset</button>
 <h3 class="text-center">Prersets and profiles</h3>
 
-<form (submit)="search(term.value)">
+<form (submit)="getEsSearchResult(term.value)">
   <div class="input-group input-group-sm" style="margin-bottom: 10px;">
-    <input #term (keyup)="search(term.value)" [value]="terms" class="form-control" placeholder="Search" autofocus>
+    <input #term [value]="terms" class="form-control" placeholder="Search" autofocus>
     <div class="input-group-btn">
       <button type="submit" class="btn btn btn-default btn-flat"><i class="fa fa-search"></i></button>
     </div>

@@ -1,4 +1,6 @@
 var presetDao = require('./presetDao');
+var Preset = require('./preset');
+var mongoose = require('mongoose');
 
 module.exports.getAllPresets = function (callback) {
     presetDao.findAll(callback);
@@ -24,19 +26,37 @@ module.exports.getPresetsByEmail = function (email) {
         .then(
         presets => {
             return presets;
-        }
-        ).catch(
+        }).catch(
         err => console.log(err)
         );
 }
 
-module.exports.createPreset = function (name, description, technology, email, audioFileId, presetId) {
-    return presetDao.createPreset(name, description, technology, email, audioFileId, presetId)
+var populatePreset = function (
+    preset, id, name, description, technology, email, audioFileId, presetId) {
+    preset.name = name;
+    preset.description = description;
+    preset.technology = technology;
+    preset.email = email;
+    preset.audioFileId = audioFileId;
+    preset._id = mongoose.Types.ObjectId(id);
+    preset.presetId = presetId;
+    return preset;
+}
+
+module.exports.updatePreset = function (id, name, description, technology, email, audioFileId, presetId) {
+    var presetInstance = new Preset();
+    return presetDao.findPresetsById(id)
         .then(
         result => {
+            if (result) {
+                presetInstance = result;
+            }
+            presetInstance = populatePreset(presetInstance, id, name, description, technology, email, audioFileId, presetId);
+            return presetDao.savePreset(presetInstance);
+        }).then(
+        result => {
             return result;
-        }
-        ).catch(
+        }).catch(
         err => console.log(err)
         );
 }
@@ -51,3 +71,15 @@ module.exports.deletePreset = function (id) {
         err => console.log(err)
         );
 }
+
+/*
+module.exports.searchPresets = function (terms) {
+    return presetDao.searchPresets(terms)
+        .then(
+        presets => {
+            return presets;
+        }).catch(
+        err => console.log(err)
+        );
+}
+*/
