@@ -39,3 +39,4 @@ jspm_packages
 frontend/public/
 frontend/node_modules/
 server/node_modules/
+.vscode/launch.json
