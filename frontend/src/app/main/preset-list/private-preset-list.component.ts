@@ -5,6 +5,7 @@ import { PresetService } from './../preset/preset.service';
 import { AudioService } from './../audio-player/audio.service';
 import { PresetListComponent } from './preset-list.component';
 import * as _ from 'underscore';
+import { Router, ActivatedRoute, Params } from '@angular/router';
 
 @Component({
     selector: 'app-private-preset-list',
@@ -17,7 +18,8 @@ export class PrivatePresetListComponent extends PresetListComponent implements O
     constructor(
         private presetService: PresetService,
         private authService: AuthService,
-        private AudioService: AudioService) {
+        private AudioService: AudioService,
+        private router: Router) {
         super(AudioService);
     }
 
@@ -34,5 +36,9 @@ export class PrivatePresetListComponent extends PresetListComponent implements O
                         return item._id !== presetId;
                     });
             });
+    }
+
+     editPreset(presetId: string): void {
+        this.router.navigate(['/edit/' + presetId ]);
     }
 }

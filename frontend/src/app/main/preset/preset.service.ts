@@ -14,8 +14,18 @@ export class PresetService {
   private presetUpdateUrl = 'http://localhost:3001/api/preset';
   private personalPresetListUrl = 'http://localhost:3001/api/preset/profile';
   private downloadPresetUrl = 'http://localhost:3001/api/presetfile/';
+  private esSearchUrl = 'http://localhost:3001/api/search/';
 
   constructor(private http: Http, private authHttp: AuthHttp) { }
+
+  getPreset(id: string): Observable<any> {
+    return this.authHttp
+      .get(this.presetUpdateUrl + '/' + id)
+      .map((res: Response) => {
+        return res.json() as Preset;
+      });
+  }
+
   getPresets(): Observable<any> {
     return this.http
       .get(this.presetListUrl)
@@ -23,7 +33,6 @@ export class PresetService {
         return res.json() as Preset[];
       });
   }
-
 
   getPersonalPresets(): Observable<any> {
     return this.authHttp
@@ -35,7 +44,7 @@ export class PresetService {
 
   savePreset(preset: Preset) {
     return this.authHttp
-      .post(this.presetUpdateUrl, preset)
+      .put(this.presetUpdateUrl, preset)
       .toPromise()
       .then(response => console.log(response))
       .catch(this.handleError);
@@ -54,6 +63,18 @@ export class PresetService {
     }
 
     return this.http.get('http://localhost:3001/api/presetList', { search: params }).map(res => res.json());
+  }
+
+  getEsSearchResult(terms: string = '*', page = 1) {
+    let params: URLSearchParams = new URLSearchParams();
+    if (terms) {
+      params.set('q', terms);
+    }
+    if (page) {
+      params.set('page', String(page));
+    }
+
+    return this.http.get(this.esSearchUrl, { search: params }).map(res => res.json());
   }
 
   downloadPreset(presetId: string) {

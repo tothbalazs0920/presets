@@ -20,8 +20,7 @@ export class PublicPresetListComponent extends PresetListComponent implements On
     errorMessage: string;
     queryObject: any = {
         pageNumber: 0,
-        searchTerm: '',
-        previouslySearchedTerm: '',
+        q: '',
     };
     private _queryParamsSubscription;
     pages: any[] = [];
@@ -48,12 +47,10 @@ export class PublicPresetListComponent extends PresetListComponent implements On
                         localStorage.setItem("token", params['token']);
                     }
                     this.queryObject.pageNumber = +params['pageNumber'];
-                    this.queryObject.searchTerm = params['searchTerm'] || '';
-                    this.queryObject.previouslySearchedTerm = params['previouslySearchedTerm'] || '';
+                    this.queryObject.q = params['q'] || '';
                 }
                 this.getSearchResult(this.queryObject.pageNumber);
-            }
-            );
+            });
     }
 
     getSearchResult(page: number) {
@@ -64,6 +61,18 @@ export class PublicPresetListComponent extends PresetListComponent implements On
                 this.total = presets.total;
                 this.pages.length = Math.ceil(presets.total / 6);
                 return this.presets = presets.presets;
+            },
+            error => this.errorMessage = <any>error);
+    }
+
+    getEsSearchResult(q, page: number = 1) {
+        this.presetService
+            .getEsSearchResult(q, page)
+            .subscribe(
+            result => {
+                this.total = result.hits.total;
+                this.pages.length = Math.ceil(result.hits.total / 6);
+                return this.presets = result.hits.hits;
             },
             error => this.errorMessage = <any>error);
     }

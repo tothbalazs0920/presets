@@ -20,7 +20,6 @@ describe('Private preset list unit test', () => {
     let presets = data;
 
     beforeEach(() => {
-        debugger;
         presetService = new PresetServiceMock();
         spyOn(presetService, 'getPersonalPresets').and.returnValue(Observable.of(presets));
         authService = new AuthServiceMock();
@@ -29,7 +28,6 @@ describe('Private preset list unit test', () => {
     });
 
     it('populates presets on ngOninit', () => {
-        debugger;
         privatePresetListComponent.ngOnInit();
         expect(privatePresetListComponent.presets.length).toBe(2);
     });
