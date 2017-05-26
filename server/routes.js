@@ -93,16 +93,6 @@ module.exports = function (app) {
         res.json({ message: "Success! You can not see this without a token " + req.user });
     });
 
-/*
-    app.post("/api/search/", function (req, res) {
-        let terms = req.body.terms;
-        presetController.searchPresets(terms)
-            .then(
-            result => {
-                return res.json(result);
-            });
-    });
-    */
 }
 /*
 app.post('/api/user', (req, res) => {
