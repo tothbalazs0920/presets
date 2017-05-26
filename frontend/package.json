@@ -16,7 +16,6 @@
     "@angular/common": "2.4.10",
     "@angular/compiler": "2.4.10",
     "@angular/core": "2.4.10",
-    "@angular/forms": "^2.4.10",
     "@angular/http": "2.4.10",
     "@angular/platform-browser": "2.4.10",
     "@angular/platform-browser-dynamic": "2.4.10",
@@ -32,7 +31,6 @@
     "ng2-file-upload": "^1.2.0",
     "ng2-pagination": "2.0.1",
     "rxjs": "5.2.0",
-    "shortid":"2.2.8",
     "ts-helpers": "^1.1.1",
     "underscore": "^1.8.3",
     "zone.js": "^0.8.5"
