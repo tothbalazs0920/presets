@@ -1,10 +1,9 @@
 var mongoose = require('mongoose');
 var mongoosastic=require("mongoosastic");
 var Schema = mongoose.Schema;
-// var ObjectId = mongoose.Types.ObjectId;
 
 var presetSchema = new Schema({
- // _id: ObjectId,
+  _id:  { type:mongoose.Schema.Types.ObjectId, es_indexed:true },
   name: { type:String, es_indexed:true },
   technology: { type:String, es_indexed:true },
   soundcloudUrl: String,
@@ -21,11 +20,11 @@ var presetSchema = new Schema({
   author: String,
   album: String,
   songTitle: String,
-  presetId: String,
+  presetId: { type:String, es_indexed:true },
   img: String,
   price: Number,
   currency: String,
-  audioFileId: String,
+  audioFileId: { type:String, es_indexed:true },
   email: String
 });
 
