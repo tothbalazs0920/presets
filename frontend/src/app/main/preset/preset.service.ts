@@ -7,6 +7,7 @@ import { PresetList } from './../preset-list/preset-list.interface';
 import 'rxjs/add/operator/toPromise';
 import 'rxjs/add/operator/map';
 import { Preset } from './preset';
+import * as _ from 'underscore';
 
 @Injectable()
 export class PresetService {
@@ -50,32 +51,30 @@ export class PresetService {
       .catch(this.handleError);
   }
 
-  getSearchResult(search: string = null, page = 1, limit = 6): Observable<PresetList<Preset>> {
+  getEsSearchResult(q: string = '*', page = 1, technology:string) {
     let params: URLSearchParams = new URLSearchParams();
-    if (search) {
-      params.set('search', search);
+    if (q) {
+      params.set('q', q);
     }
     if (page) {
       params.set('page', String(page));
     }
-    if (limit) {
-      params.set('limit', String(limit));
-    }
-
-    return this.http.get('http://localhost:3001/api/presetList', { search: params }).map(res => res.json());
-  }
-
-  getEsSearchResult(terms: string = '*', page = 1) {
-    let params: URLSearchParams = new URLSearchParams();
-    if (terms) {
-      params.set('q', terms);
-    }
-    if (page) {
-      params.set('page', String(page));
+    if(technology) {
+      params.set('technology', technology);
     }
 
     return this.http.get(this.esSearchUrl, { search: params }).map(res => res.json());
   }
+
+  mapSearchResult(result) {
+        let presets:Preset[] = [];
+        _(result.hits.hits).each(hit => {
+            let preset = hit._source;
+            preset._id = hit._id;
+            presets.push(preset);
+        });
+        return presets;
+    }
 
   downloadPreset(presetId: string) {
     return this.downloadPresetUrl + presetId;

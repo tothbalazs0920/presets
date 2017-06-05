@@ -7,6 +7,7 @@ import { AudioService } from './../audio-player/audio.service';
 import { PresetListComponent } from './preset-list.component';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { Observable } from 'rxjs/Observable';
+import * as _ from 'underscore';
 
 @Component({
     selector: 'preset-list',
@@ -16,11 +17,12 @@ import { Observable } from 'rxjs/Observable';
 export class PublicPresetListComponent extends PresetListComponent implements OnInit {
     presets: Preset[];
     total: number;
-    terms: string = "";
+    technologies = ['Kemper', 'Axe Fx II XL+', 'AX8', 'Helix'];
     errorMessage: string;
     queryObject: any = {
-        pageNumber: 0,
         q: '',
+        technology: '',
+        page: 0
     };
     private _queryParamsSubscription;
     pages: any[] = [];
@@ -41,48 +43,47 @@ export class PublicPresetListComponent extends PresetListComponent implements On
             .subscribe(
             params => {
                 if (Object.keys(params).length === 0) {
-                    this.queryObject.pageNumber = 1;
+                    this.queryObject.page = 1;
                 } else {
                     if (params['token']) {
                         localStorage.setItem("token", params['token']);
                     }
-                    this.queryObject.pageNumber = +params['pageNumber'];
+                    this.queryObject.page = +params['page'];
                     this.queryObject.q = params['q'] || '';
+                    this.queryObject.technology = params['technology'] || '';
                 }
-                this.getSearchResult(this.queryObject.pageNumber);
+                this.getEsSearchResult(this.queryObject.q, this.queryObject.page, this.queryObject.technology);
             });
     }
 
-    getSearchResult(page: number) {
+    getEsSearchResult(q:string, page: number = 1, technology:string) {
         this.presetService
-            .getSearchResult(this.terms, page)
-            .subscribe(
-            presets => {
-                this.total = presets.total;
-                this.pages.length = Math.ceil(presets.total / 6);
-                return this.presets = presets.presets;
-            },
-            error => this.errorMessage = <any>error);
-    }
-
-    getEsSearchResult(q, page: number = 1) {
-        this.presetService
-            .getEsSearchResult(q, page)
+            .getEsSearchResult(q, page, technology)
             .subscribe(
             result => {
                 this.total = result.hits.total;
-                this.pages.length = Math.ceil(result.hits.total / 6);
-                return this.presets = result.hits.hits;
+                this.pages.length = Math.ceil(result.hits.total / 3);
+                return this.presets = this.presetService.mapSearchResult(result);
             },
             error => this.errorMessage = <any>error);
     }
 
-    getPageWithSearchResult(pageNumber: number): void {
-        if (this.queryObject.pageNumber < 1 || this.queryObject.pageNumber > this.pages.length) {
+    onSubmit(q: string, page: number) {
+        if (this.queryObject.page < 1 || this.queryObject.page > this.pages.length) {
+            return;
+        }
+        this.queryObject.q = q;
+        this.queryObject.page = page;
+        this.router.navigate(['/presets'], { queryParams: this.queryObject });
+    }
+
+
+    getPageWithSearchResult(page: number): void {
+        if (this.queryObject.page < 1 || this.queryObject.page > this.pages.length) {
             return;
         }
 
-        this.queryObject.pageNumber = pageNumber;
+        this.queryObject.page = page;
         this.router.navigate(['/presets'], { queryParams: this.queryObject });
     }
 }

@@ -2,43 +2,50 @@
 <button type="button" class="btn btn-default" onclick="location.href='http://localhost:3001/auth/google';" *ngIf="!authService.loggedIn()">Add Preset</button>
 <h3 class="text-center">Prersets and profiles</h3>
 
-<form (submit)="getEsSearchResult(term.value)">
+<form (submit)="onSubmit(term.value, 1)">
   <div class="input-group input-group-sm" style="margin-bottom: 10px;">
-    <input #term [value]="terms" class="form-control" placeholder="Search" autofocus>
+    <input #term [value]="queryObject.q" class="form-control" placeholder="Search" autofocus>
     <div class="input-group-btn">
       <button type="submit" class="btn btn btn-default btn-flat"><i class="fa fa-search"></i></button>
+    </div>
+  </div>
+  <div>
+    <label>Product</label>
+    <div>
+      <select [(ngModel)]="queryObject.technology" name="technology">
+                <option *ngFor="let technology of technologies" [value]="technology" >{{technology}}</option>
+      </select>
     </div>
   </div>
 </form>
 
 <p>Results: {{ total }}</p>
 
-<div class="col-sm-4" *ngFor="let preset of presets">
-  <div class="panel panel-default">
-    <div class="panel-heading">
-      <h3 class="panel-title">{{preset.name}}</h3>
+<div class="col-sm-4 " *ngFor="let preset of presets ">
+  <div class="panel panel-default ">
+    <div class="panel-heading ">
+      <h3 class="panel-title ">{{preset.name}}</h3>
     </div>
-    <div class="panel-body">
-      <div class="two-lines"> {{preset.description}} </div>
-      <audio-player (play)="handlePlay(preset._id, preset.audioFileId)" (pause)="handlePause(preset._id)" [showPause]="showPause(preset._id)"
-        [showPlay]="showPlay(preset._id)"></audio-player>
+    <div class="panel-body ">
+      <div class="two-lines "> {{preset.description}} </div>
+      <audio-player (play)="handlePlay(preset._id, preset.audioFileId) " (pause)="handlePause(preset._id)
+        " [showPause]="showPause(preset._id) " [showPlay]="showPlay(preset._id) "></audio-player>
     </div>
-    <div class="panel-footer">
-      <ul class="list-inline">
-        <li><a class="btn btn-lg">{{preset.technology}}</a></li>
-        <li class="pull-right"><a  (click)="download(preset.presetId)" class="btn btn-success">Download</a></li>
+    <div class="panel-footer ">
+      <ul class="list-inline ">
+        <li><a class="btn btn-lg ">{{preset.technology}}</a></li>
+        <li class="pull-right "><a (click)="download(preset.presetId) " class="btn btn-success ">Download</a></li>
       </ul>
     </div>
   </div>
 </div>
 
-<div style="margin-top: 15px;">
-  <button (click)="getSearchResult(1)" class="pageNumber">First</button>
-  <button [disabled]="queryObject.pageNumber == 1" (click)="getPageWithSearchResult((queryObject.pageNumber - 1))" [ngClass]="{disabled: pageNumber == 1 || pageNumber == 0}"
-    class="pageNumber">Previous</button>
+<div style="margin-top: 15px; ">
+  <button [disabled]="queryObject.page==1 " (click)="getPageWithSearchResult((queryObject.page - 1)) " [ngClass]="{disabled:
+        page==1 || page==0 } " class="page ">Previous</button>
   <span>
-                {{queryObject.pageNumber}} / {{pages.length}}
+                {{queryObject.page}} / {{pages.length}}
             </span>
-  <button [disabled]="queryObject.pageNumber == pages.length" (click)="getPageWithSearchResult((queryObject.pageNumber + 1))"
-    [ngClass]="{disabled: pageNumber == pages.length}" class="pageNumber">Next</button>
+  <button [disabled]="queryObject.page==pages.length " (click)="getPageWithSearchResult((queryObject.page + 1))
+        " [ngClass]="{disabled: page==pages.length} " class="page ">Next</button>
 </div>

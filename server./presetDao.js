@@ -193,18 +193,59 @@ module.exports.gridFsEndpoints = function (app) {
     });
 
     app.get("/api/search", function (req, res) {
-        var perPage = 3;
-        var page = req.query.page > 0 ? req.query.page : 0
-        var terms = req.query.q;
-        Preset.search(
-            { query_string: { query: terms } }, 
-            { from: page, size: perPage, hydrate: true },
-             function (err, results) {
+        let esQuery = buildEsQuery(req.query);
+
+        Preset.esSearch(esQuery, function (err, results) {
             if (err) {
                 console.log(err);
             }
             return res.json(results);
         });
     });
+
+    let buildEsQuery = function (params) {
+        let esQuery = {};
+        let perPage = 3;
+        let page;
+
+        if (params.page > 0) {
+            page = params.page - 1;
+        } else {
+            page = 0;
+        }
+
+        esQuery.from = page;
+        esQuery.size = perPage;
+        esQuery.query = {
+            match_all: {}
+        };
+
+        if (params.q || params.technology) {
+            esQuery = {
+                query: {
+                    bool: {
+                    }
+                }
+            }
+        }
+
+        if (params.q) {
+            esQuery.query.bool.must = {
+                query_string: {
+                    query: params.q
+                }
+            }
+        }
+
+        if (params.technology) {
+            esQuery.query.bool.filter = {
+                term: {
+                    technology: params.technology.toLowerCase()
+                }
+            }
+        }
+
+        return esQuery;
+    }
 
 }
