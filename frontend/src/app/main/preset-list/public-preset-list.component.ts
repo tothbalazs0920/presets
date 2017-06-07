@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { AuthService } from './../user/auth.service';
 
 import { Preset } from './../preset/preset';
@@ -8,6 +8,7 @@ import { PresetListComponent } from './preset-list.component';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { Observable } from 'rxjs/Observable';
 import * as _ from 'underscore';
+import { ModalComponent } from 'ng2-bs3-modal/ng2-bs3-modal';
 
 @Component({
     selector: 'preset-list',
@@ -17,7 +18,7 @@ import * as _ from 'underscore';
 export class PublicPresetListComponent extends PresetListComponent implements OnInit {
     presets: Preset[];
     total: number;
-    technologies = ['Kemper', 'Axe Fx II XL+', 'AX8', 'Helix'];
+    technologies = ['', 'Kemper', 'Axe Fx II XL+', 'AX8', 'Helix'];
     errorMessage: string;
     queryObject: any = {
         q: '',
@@ -26,6 +27,9 @@ export class PublicPresetListComponent extends PresetListComponent implements On
     };
     private _queryParamsSubscription;
     pages: any[] = [];
+
+    @ViewChild('loginModal')
+    modal: ModalComponent;
 
     constructor(
         private AudioService: AudioService,
@@ -56,7 +60,7 @@ export class PublicPresetListComponent extends PresetListComponent implements On
             });
     }
 
-    getEsSearchResult(q:string, page: number = 1, technology:string) {
+    getEsSearchResult(q: string, page: number = 1, technology: string) {
         this.presetService
             .getEsSearchResult(q, page, technology)
             .subscribe(

@@ -5,20 +5,29 @@
     </div>
     <ul class="nav navbar-nav">
       <li>
-        <a routerLink="/profile" *ngIf="authService.loggedIn()" routerLinkActive="active">My presets</a>
+        <a routerLink="/profile" *ngIf="authService.loggedIn()" routerLinkActive="active">Uploaded presets</a>
       </li>
     </ul>
     <ul class="nav navbar-nav navbar-right">
       <li>
-        <a href="http://localhost:3001/auth/google" *ngIf="!authService.loggedIn()">Log In</a>
+      <button class="loginBtn loginBtn--google" onclick="location.href = 'http://localhost:3001/auth/google'"*ngIf="!authService.loggedIn()">
+        Login with Google
+      </button>
       </li>
       <li>
-        <a (click)=authService.logout() *ngIf="authService.loggedIn()">Log Out</a>
+        <button class="loginBtn loginBtn--google" (click)=authService.logout() *ngIf="authService.loggedIn()">Log Out</button>
       </li>
     </ul>
   </nav>
   <div class="col-sm-12">
     <router-outlet></router-outlet>
   </div>
-  
+  <modal #loginModal>
+    <modal-body>
+        <button class="loginBtn loginBtn--google" onclick="location.href = 'http://localhost:3001/auth/google'"*ngIf="!authService.loggedIn()">
+        Login with Google
+      </button>
+    </modal-body>
+</modal>
+
 </div>

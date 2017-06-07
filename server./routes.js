@@ -38,7 +38,7 @@ module.exports = function (app) {
 
     app.put('/api/preset', passport.authenticate('jwt', { session: false }), (req, res) => {
         presetController.updatePreset(
-            req.body._id, req.body.name, req.body.description, req.body.technology, req.user.email, req.body.audioFileId, req.body.presetId)
+            req.body._id, req.body.name, req.body.description, req.body.technology, req.user.email, req.user.name, req.user.picture, req.body.audioFileId, req.body.presetId)
             .then(
             result => {
                 return res.json(result);
@@ -88,10 +88,6 @@ module.exports = function (app) {
             var token = jwt.sign(payload, jwtOptions.secretOrKey, { expiresIn: '1h' });
             res.redirect('http://localhost:4200/presets?pageNumber=1&searchTerm=&previouslySearchedTerm=&token=' + token);
         });
-
-    app.get("/secret", passport.authenticate('jwt', { session: false }), function (req, res) {
-        res.json({ message: "Success! You can not see this without a token " + req.user });
-    });
 
 }
 /*

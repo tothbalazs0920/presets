@@ -9,7 +9,7 @@ import { AudioService } from './../audio-player/audio.service';
 export class PresetListComponent {
   playing = false;
   current?: string;
-
+  
   constructor(
     protected audioService: AudioService) {
   }

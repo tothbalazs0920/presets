@@ -2,12 +2,11 @@ export class Preset {
   _id: string;
   name: string;
   technology: string;
-  soundcloudUrl: string;
   description: string;
   genre: string[];
   numberOfDownLoads: number;
-  amp: string[];
-  cabinet: string[];
+  amp: string;
+  cabinet: string;
   michrophones: string[];
   presetAuthor: string;
   lead: boolean;
@@ -18,6 +17,7 @@ export class Preset {
   songTitle: string;
   presetId: string;
   img: string;
+  profilePicture: string;
   price: number;
   currency: string;
   audioFileId: string;

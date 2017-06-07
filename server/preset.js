@@ -3,29 +3,29 @@ var mongoosastic=require("mongoosastic");
 var Schema = mongoose.Schema;
 
 var presetSchema = new Schema({
-  _id:  { type:mongoose.Schema.Types.ObjectId, es_indexed:true },
+  _id: mongoose.Schema.Types.ObjectId,
   name: { type:String, es_indexed:true },
   technology: { type:String, es_indexed:true },
-  soundcloudUrl: String,
   description: { type:String, es_indexed:true },
   genre: { type : Array , "default" : [] },
   numberOfDownLoads: Number,
-  amp: { type : Array , "default" : [] },
-  cabinet: { type : Array , "default" : [] },
+  amp: { type:String, es_indexed:true },
+  cabinet: { type:String, es_indexed:true },
   michrophones: { type : Array , "default" : [] },
-  presetAuthor: String,
+  presetAuthor: { type:String, es_indexed:true },
   lead: Boolean,
   clean: Boolean,
   rythm: Boolean,
-  author: String,
-  album: String,
-  songTitle: String,
+  author: { type:String, es_indexed:true },
+  album: { type:String, es_indexed:true },
+  songTitle: { type:String, es_indexed:true },
   presetId: { type:String, es_indexed:true },
   img: String,
+  profilePicture: { type:String, es_indexed:true },
   price: Number,
   currency: String,
   audioFileId: { type:String, es_indexed:true },
-  email: String
+  email: { type:String, es_indexed:true },
 });
 
 presetSchema.plugin(mongoosastic,{

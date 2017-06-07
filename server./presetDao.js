@@ -60,11 +60,12 @@ module.exports.findUser = function (email) {
     return query.exec();
 }
 
-module.exports.saveUser = function (oauthID, email, name) {
+module.exports.saveUser = function (oauthID, email, name, picture) {
     user = new User({
         oauthID: oauthID,
         email: email,
         name: name,
+        picture: picture,
         created: Date.now()
     });
     return user.save();
@@ -221,10 +222,8 @@ module.exports.gridFsEndpoints = function (app) {
         };
 
         if (params.q || params.technology) {
-            esQuery = {
-                query: {
-                    bool: {
-                    }
+            esQuery.query = {
+                bool: {
                 }
             }
         }

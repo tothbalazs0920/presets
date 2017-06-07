@@ -32,18 +32,20 @@ module.exports.getPresetsByEmail = function (email) {
 }
 
 var populatePreset = function (
-    preset, id, name, description, technology, email, audioFileId, presetId) {
+    preset, id, name, description, technology, email, presetAuthor, profilePicture, audioFileId, presetId) {
     preset.name = name;
     preset.description = description;
     preset.technology = technology;
     preset.email = email;
+    preset.presetAuthor = presetAuthor;
+    preset.profilePicture = profilePicture;
     preset.audioFileId = audioFileId;
     preset._id = mongoose.Types.ObjectId(id);
     preset.presetId = presetId;
     return preset;
 }
 
-module.exports.updatePreset = function (id, name, description, technology, email, audioFileId, presetId) {
+module.exports.updatePreset = function (id, name, description, technology, email, presetAuthor, profilePicture, audioFileId, presetId) {
     var presetInstance = new Preset();
     return presetDao.findPresetsById(id)
         .then(
@@ -51,7 +53,7 @@ module.exports.updatePreset = function (id, name, description, technology, email
             if (result) {
                 presetInstance = result;
             }
-            presetInstance = populatePreset(presetInstance, id, name, description, technology, email, audioFileId, presetId);
+            presetInstance = populatePreset(presetInstance, id, name, description, technology, email, presetAuthor, profilePicture, audioFileId, presetId);
             return presetDao.savePreset(presetInstance);
         }).then(
         result => {

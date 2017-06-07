@@ -32,7 +32,7 @@ passport.use(new GoogleStrategy({
                     done(null, user);
                     return;
                 } else {
-                    return userController.saveUser(profile.id, profile.email, profile.displayName);
+                    return userController.saveUser(profile.id, profile.email, profile.displayName, profile.photos[0].value);
                 }
             })
             .then(function (result) {
