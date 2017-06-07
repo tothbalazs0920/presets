@@ -1,6 +1,6 @@
 <button type="button" class="btn btn-default" routerLink="/upload" *ngIf="authService.loggedIn()">Upload Preset</button>
 <button type="button" class="btn btn-default" (click)="this.modal.open();" *ngIf="!authService.loggedIn()">Upload Preset</button>
-<h3 class="text-center">ToneFinder</h3>
+<h3 class="text-center">Guitar Tone Finder</h3>
 
 <form (submit)="onSubmit(term.value, 1)">
   <div class="input-group input-group-sm" style="margin-bottom: 10px;">
@@ -28,6 +28,8 @@
     </div>
     <div class="panel-body ">
       <div class="two-lines "> {{preset.description}} </div>
+    <div>Amplifier: {{preset.amp}}</div>
+    <div>Cabinet: {{preset.cabinet}}</div>
       <audio-player (play)="handlePlay(preset._id, preset.audioFileId) " (pause)="handlePause(preset._id)
         " [showPause]="showPause(preset._id) " [showPlay]="showPlay(preset._id) "></audio-player>
     </div>

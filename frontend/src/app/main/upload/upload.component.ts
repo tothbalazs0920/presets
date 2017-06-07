@@ -22,6 +22,7 @@ export class UploadComponent {
     public hasAnotherDropZoneOver: boolean = false;
     @ViewChild('myModal')
     modal: ModalComponent;
+    technologies = ['Kemper', 'Axe Fx II', 'AX8', 'FX-8', 'Helix', 'G-system', 'Bias'];
 
     constructor(
         private authService: AuthService,
@@ -109,7 +110,8 @@ export class UploadComponent {
         this.presetService.savePreset(this.preset)
             .then(x => {
                 this.modal.open();
-                setTimeout(() => this.modal.close(), 700)
+                setTimeout(() => this.modal.close(), 600);
+                setTimeout(() => this.router.navigate(['/profile']), 700);;
             });
     }
 }
