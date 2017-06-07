@@ -48,6 +48,7 @@ export class UploadComponent {
             author: '',
             album: '',
             songTitle: '',
+            originalPerestFileName: '',
             presetId: '',
             img: '',
             profilePicture: '',
@@ -79,6 +80,7 @@ export class UploadComponent {
         this.uploader.onWhenAddingFileFailed = () => this.onUploaderWhenAddingFileFailed();
         this.uploader.onCompleteItem = (item: any, response: any, status: any, headers: any) => {
             this.preset.audioFileId = JSON.parse(response).filename;
+            this.preset.originalAudoFileName = JSON.parse(response).originalname;
         };
 
         this.presetUploader = new FileUploader({ url: this.presetUploadUrl });
@@ -89,6 +91,7 @@ export class UploadComponent {
         this.presetUploader.onCompleteItem = (item: any, response: any, status: any, headers: any) => {
             console.log(JSON.parse(response).filename);
             this.preset.presetId = JSON.parse(response).filename;
+            this.preset.originalPerestFileName = JSON.parse(response).originalname;
         };
     }
     

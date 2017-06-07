@@ -20,11 +20,13 @@ var presetSchema = new Schema({
   album: { type:String, es_indexed:true },
   songTitle: { type:String, es_indexed:true },
   presetId: { type:String, es_indexed:true },
+  originalPerestFileName: { type:String, es_indexed:true },
   img: String,
   profilePicture: { type:String, es_indexed:true },
   price: Number,
   currency: String,
   audioFileId: { type:String, es_indexed:true },
+  originalAudoFileName: { type:String, es_indexed:true },
   email: { type:String, es_indexed:true },
 });
 

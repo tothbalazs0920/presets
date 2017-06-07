@@ -12,11 +12,11 @@
         <input type="text" class="form-control" [(ngModel)]="preset.technology" name="technology" id="technology">
     </div>
     <div class="form-group">
-        <label for="description">Mp3 sample</label>
+        <label for="description">Mp3 sample:</label>
+    <div>{{preset.originalAudoFileName}}</div>
         <input type="file" ng2FileSelect name="file" [uploader]="uploader" />
         <table class="table">
             <tr *ngFor="let item of uploader.queue">
-                <td><strong>{{ item?.file?.name }}</strong></td>
                 <td class="text-center">
                     <span *ngIf="item.isSuccess"><i class="glyphicon glyphicon-ok"></i></span>
                     <span *ngIf="item.isCancel"><i class="glyphicon glyphicon-ban-circle"></i></span>
@@ -30,11 +30,11 @@
     </div>
 
     <div class="form-group">
-        <label for="description">Preset file</label>
+        <label for="description">Preset/Profile file:</label>
+        <div>{{preset.originalPerestFileName}}</div>
         <input type="file" ng2FileSelect name="presetFile" [uploader]="presetUploader" />
         <table class="table">
             <tr *ngFor="let item of presetUploader.queue">
-                <td><strong>{{ item?.file?.name }}</strong></td>
                 <td class="text-center">
                     <span *ngIf="item.isSuccess"><i class="glyphicon glyphicon-ok"></i></span>
                     <span *ngIf="item.isCancel"><i class="glyphicon glyphicon-ban-circle"></i></span>

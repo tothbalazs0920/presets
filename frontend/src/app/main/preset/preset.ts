@@ -16,6 +16,7 @@ export class Preset {
   album: string;
   songTitle: string;
   presetId: string;
+  originalPerestFileName: string;
   img: string;
   profilePicture: string;
   price: number;

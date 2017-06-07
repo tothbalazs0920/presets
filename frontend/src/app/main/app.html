@@ -22,12 +22,5 @@
   <div class="col-sm-12">
     <router-outlet></router-outlet>
   </div>
-  <modal #loginModal>
-    <modal-body>
-        <button class="loginBtn loginBtn--google" onclick="location.href = 'http://localhost:3001/auth/google'"*ngIf="!authService.loggedIn()">
-        Login with Google
-      </button>
-    </modal-body>
-</modal>
 
 </div>

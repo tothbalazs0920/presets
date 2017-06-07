@@ -38,7 +38,8 @@ module.exports = function (app) {
 
     app.put('/api/preset', passport.authenticate('jwt', { session: false }), (req, res) => {
         presetController.updatePreset(
-            req.body._id, req.body.name, req.body.description, req.body.technology, req.user.email, req.user.name, req.user.picture, req.body.audioFileId, req.body.presetId)
+            req.body._id, req.body.name, req.body.description, req.body.technology, req.user.email, req.user.name, req.user.picture,
+            req.body.audioFileId, req.body.originalAudoFileName, req.body.presetId, req.body.originalPerestFileName)
             .then(
             result => {
                 return res.json(result);
