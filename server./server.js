@@ -27,3 +27,4 @@ presetDao.gridFsEndpoints(app);
 
 app.listen(3001);
 console.log('Listening on localhost:3001');
+console.log(process.env.NODE_ENV);

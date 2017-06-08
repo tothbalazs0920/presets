@@ -32,7 +32,7 @@ var presetSchema = new Schema({
 
 presetSchema.plugin(mongoosastic,{
   //host: 'localhost:9200',
-  auth: 'elastic:changeme'
+  auth: process.env.ELASTICSEARCH_AUTH
 });
 
 var Preset = mongoose.model('Presets', presetSchema);

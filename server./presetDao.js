@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 var mongoosastic = require("mongoosastic");
-mongoose.connect('mongodb://localhost/presets');
+mongoose.connect(process.env.MONGO_URL);
 var conn = mongoose.connection;
 mongoose.Promise = global.Promise;
 
