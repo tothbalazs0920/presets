@@ -7,12 +7,17 @@ var ExtractJwt = passportJWT.ExtractJwt;
 var JwtStrategy = passportJWT.Strategy;
 var jwtOptions = {};
 jwtOptions.jwtFromRequest = ExtractJwt.fromAuthHeader();
-jwtOptions.secretOrKey = 'tasmanianDevil';
+jwtOptions.secretOrKey = process.env.JWTOPTIONS_SECRET;
 var authentication = require('./authentication');
 var passport = authentication.getPassport();
 
 module.exports = function (app) {
     app.use(passport.initialize());
+
+
+    app.get('/api/health-check', (req, res) => {
+        return res.json('Ok');
+    });
 
     app.get('/api/presetList', function (req, res) {
         var perPage = 6;
